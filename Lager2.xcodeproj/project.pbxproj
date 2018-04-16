@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		7505903D2084AB12005785E8 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 7505903C2084AB12005785E8 /* main.c */; };
-		750590452084B1CD005785E8 /* string.c in Sources */ = {isa = PBXBuildFile; fileRef = 750590442084B1CD005785E8 /* string.c */; };
+		750590492084C023005785E8 /* string_op.c in Sources */ = {isa = PBXBuildFile; fileRef = 750590482084C023005785E8 /* string_op.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,9 +26,9 @@
 /* Begin PBXFileReference section */
 		750590392084AB12005785E8 /* Lager2 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Lager2; sourceTree = BUILT_PRODUCTS_DIR; };
 		7505903C2084AB12005785E8 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
-		750590432084B1CD005785E8 /* string.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = string.h; sourceTree = "<group>"; };
-		750590442084B1CD005785E8 /* string.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = string.c; sourceTree = "<group>"; };
 		750590462084B52F005785E8 /* main.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = main.h; sourceTree = "<group>"; };
+		750590472084C023005785E8 /* string_op.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = string_op.h; sourceTree = "<group>"; };
+		750590482084C023005785E8 /* string_op.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = string_op.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,8 +63,8 @@
 			children = (
 				7505903C2084AB12005785E8 /* main.c */,
 				750590462084B52F005785E8 /* main.h */,
-				750590442084B1CD005785E8 /* string.c */,
-				750590432084B1CD005785E8 /* string.h */,
+				750590472084C023005785E8 /* string_op.h */,
+				750590482084C023005785E8 /* string_op.c */,
 			);
 			path = Lager2;
 			sourceTree = "<group>";
@@ -125,8 +125,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				750590452084B1CD005785E8 /* string.c in Sources */,
 				7505903D2084AB12005785E8 /* main.c in Sources */,
+				750590492084C023005785E8 /* string_op.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

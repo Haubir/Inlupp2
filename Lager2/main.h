@@ -9,7 +9,7 @@
 #ifndef main_h
 #define main_h
 
-#include "string.h"
+#include "string_op.h"
 
 /* Returns a string containing the menu of the program. */
 char *menu_string(void);
