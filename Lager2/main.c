@@ -12,9 +12,10 @@ char *menu_string() {
   return "[L]ägg till en vara\n[T]a bort en vara\n[R]edigera en vara\nÅn[g]ra senaste ändringen\nLista [h]ela varukatalogen\n[P]acka en pall\n[A]vsluta\n\nVad vill du göra idag? ";
 }
 
+
 int main(int argc, const char * argv[]) {
-  // insert code here...
   
+  tree *main_tree = tree_new();
   
   while (1) {
     char *input_string = calloc(1024, sizeof(char));
@@ -28,7 +29,17 @@ int main(int argc, const char * argv[]) {
     strip_string(input_string_tolower);
     
     if (string_length(input_string_tolower) > 1){printf("Din input matchade inte något av alternativen från menyn. Försök igen.\n");}
-    else if (string_compare(input_string_tolower, "l") == 0) {printf("Du valde att lägga till en vara\n");}
+    else if (string_compare(input_string_tolower, "l") == 0) {
+      printf("Du valde att lägga till en vara\n"); 
+      node **root = get_root(main_tree);
+      if (*root == NULL) {
+        tree *new_tree = test_add_root(); // Fortsätt härifrån, trädet som skapas i test_add_root() är inte samma som hamnar i main_tree efter anropet....
+        tree_copy(main_tree, new_tree);
+      }
+      else {
+        test_add_to_tree(main_tree);
+      }
+    }
     else if (string_compare(input_string_tolower, "t") == 0) {printf("Du valde att ta bort en vara\n");}
     else if (string_compare(input_string_tolower, "r") == 0) {printf("Du valde att redigera en vara\n");}
     else if (string_compare(input_string_tolower, "g") == 0) {printf("Du valde att ångra den senaste ändringen\n");}
