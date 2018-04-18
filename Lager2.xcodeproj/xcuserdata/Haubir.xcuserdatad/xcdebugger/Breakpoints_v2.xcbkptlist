@@ -10,7 +10,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Lager2/main.c"
-            timestampString = "545736606.474612"
+            timestampString = "545749998.708146"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "45"
@@ -26,12 +26,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Lager2/tree.c"
-            timestampString = "545738762.16933"
+            timestampString = "545749998.708683"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "270"
-            endingLineNumber = "270"
-            landmarkName = "tree_rebalance"
+            startingLineNumber = "123"
+            endingLineNumber = "123"
+            landmarkName = "tree_root_free"
             landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>

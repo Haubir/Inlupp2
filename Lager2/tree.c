@@ -45,12 +45,12 @@ int tree_depth(tree *input_tree) {
 }
 
 /* Returns the tree root */
-node **get_root(tree *input_tree) {
+node **tree_get_root(tree *input_tree) {
   return input_tree->root;
 }
 
 /* Sets the tree root */
-void set_root(tree *input_tree, node **new_root) {
+void tree_set_root(tree *input_tree, node **new_root) {
   input_tree->root = new_root;
 }
 
@@ -74,11 +74,13 @@ node *node_new() {
   return new_node;
 }
 
-char *get_key(node *input_node) {
+bool node_has_children(node *input_node) {return (input_node->left || input_node->right);}
+
+char *node_get_key(node *input_node) {
   return input_node->key;
 }
 
-void set_key(node *input_node, char *new_key) {
+void node_set_key(node *input_node, char *new_key) {
   input_node->key = new_key; 
 }
 
@@ -115,6 +117,22 @@ void tree_copy(tree *destination, tree *source) {
 void node_copy(node *destination, node *source) {
   memcpy(destination, source, sizeof(node));
 }
+
+/* Free:s up the memory that was allocated for the root */
+bool tree_root_free(node **input_root) {
+  node *tree_root = *input_root;
+  if (!tree_root) {
+    return true;
+  }
+  
+  node_free(tree_root);
+  
+  free(input_root);
+  input_root = NULL;
+  
+  return input_root == NULL;
+}
+
 
 /* Free:s up the memory that was allocated for a node */
 bool node_free(node *to_delete) {
@@ -186,20 +204,38 @@ bool tree_node_insert(node *start, node *to_insert) {
   }
 }
 
+bool tree_remove_root(tree *input_tree) {
+  tree_root_free(input_tree->root);
+  
+  input_tree->root = NULL;
+  input_tree->size--;
+  input_tree->depth--;
+  
+  return true;
+}
+
 // TODO!!! Noder tas bort random. Ibland funkar det, ibland inte. Fortsätt härifrån.
 /* Delete a node from the search tree */
 bool tree_node_remove(tree *input_tree, char *key) {
-  if (*(input_tree->root) == NULL) {
+  if (!tree_get_root(input_tree)) return false;
+  
+  node *tree_root = *(tree_get_root(input_tree));
+  
+  if (tree_root == NULL) {
     printf("Attempted tree to delete from was NULL.\n");
     return false;
   }
 
+  // TODO!! if (tree_root->key == key) tree_remove_root(input_tree);
+  
   node *to_delete = find_node_in_tree(key, input_tree);
   
   if (!to_delete) return false; // The node to delete was not found
-  
+  else if (string_compare(node_get_key(to_delete), key) == 0) return tree_remove_root(input_tree);
   else {
-    if (to_delete->left || to_delete->right) tree_rebalance(input_tree, to_delete);
+    if (node_has_children(to_delete)) tree_rebalance(input_tree, to_delete);
+    if (to_delete->parent->left == to_delete) to_delete->parent->left = NULL;
+    if (to_delete->parent->right == to_delete) to_delete->parent->right = NULL;
     
     to_delete->left = NULL;
     to_delete->right = NULL;
@@ -219,25 +255,12 @@ bool tree_node_remove(tree *input_tree, char *key) {
 /* Searches through the tree to find a node that matches the input key. If a node is found, dest_node will point to it when the function is done. */
 node *find_node_in_tree(char *find_key, tree *input_tree/*, node *dest_node*/) {
   
-  if (*(input_tree->root) == NULL) {
-    return false;
-  }
+  if (*(input_tree->root) == NULL) return false;
   
   node **root_node = input_tree->root;
   node *test = find_node_in_tree_aux(find_key, *root_node);
   
   return test;
-  
-  // OBS: Kolla om lösningen nedan är korrekt kodad!!
-  /*if (test) {
-    dest_node = test;
-    return true;
-  }
-  else {
-    node_free(dest_node);
-    return false;
-    return NULL;
-  }*/
 }
 
 /* Auxilliary recursive function for find_node_in_tree that goes through each node to find a node that matches the key */

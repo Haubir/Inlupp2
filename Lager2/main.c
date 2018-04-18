@@ -31,8 +31,8 @@ int main(int argc, const char * argv[]) {
     if (string_length(input_string_tolower) > 1){printf("Din input matchade inte något av alternativen från menyn. Försök igen.\n");}
     else if (string_compare(input_string_tolower, "l") == 0) {
       printf("Du valde att lägga till en vara\n"); 
-      node **root = get_root(main_tree);
-      if (*root == NULL) {
+      node **root = tree_get_root(main_tree);
+      if (root == NULL) {
         tree *new_tree = test_add_root();
         tree_copy(main_tree, new_tree);
       }

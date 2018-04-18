@@ -36,10 +36,10 @@ int tree_depth(tree *tree);
 /// Get the root of the tree 
 ///
 /// \returns: the root of the tree
-node **get_root(tree *input_tree);
+node **tree_get_root(tree *input_tree);
 
 /// Sets the tree root 
-void set_root(tree *input_tree, node **new_root);
+void tree_set_root(tree *input_tree, node **new_root);
 
 /// Creates a new root 
 ///
@@ -51,13 +51,18 @@ node **root_new(void);
 /// \returns: a empty node with an empty ware assigned to it
 node *node_new(void);
 
+/// Checks if the input_node has any children
+///
+/// \returns: true if the node has any children
+bool node_has_children(node *input_node);
+
 /// Get the key of the input_node
 ///
 /// \returns: the key
-char *get_key(node *input_node);
+char *node_get_key(node *input_node);
 
 /// Set the key of the input_node to the new_key
-void set_key(node *input_node, char *new_key);
+void node_set_key(node *input_node, char *new_key);
 
 /// Get the left node of the input_node
 ///
@@ -104,9 +109,14 @@ bool tree_node_insert(node *start, node *to_insert);
 /// \returns: true if node deletion was successful
 bool tree_node_remove(tree *tree_root, char *key);
 
+/// Free:s up the memory that was allocated for the root
+///
+/// \returns: true if root was successfully deleted 
+bool tree_root_free(node **input_root);
+
 /// Free:s up the memory that was allocated for a node
 ///
-/// \returns: true
+/// \returns: true if node was successfully deleted
 bool node_free(node *to_delete);
 
 /// Searches through the tree to find a node that matches the input key. If a node is found, dest_node will point to it when the function is done.

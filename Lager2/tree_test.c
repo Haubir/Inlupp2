@@ -18,7 +18,7 @@ tree *test_add_root() {
   string_entry("Please type a name for the new node: ", node_name);
   strip_string(node_name);
   
-  set_key(test_node, node_name);  
+  node_set_key(test_node, node_name);  
   
   if (tree_node_add(test_tree, test_node)) {
     printf("A node was successfully added to the tree!\n");
@@ -39,7 +39,7 @@ void test_add_to_tree(tree *target_tree) {
   string_entry("Please type a name for the new node: ", node_name);
   strip_string(node_name);
   
-  set_key(test_node, node_name);  
+  node_set_key(test_node, node_name);  
   
   if (tree_node_add(target_tree, test_node)) {
     printf("A node was successfully added to the tree!\n");
