@@ -77,7 +77,7 @@ bool node_free(node *to_delete);
 /// Searches through the tree to find a node that matches the input key. If a node is found, dest_node will point to it when the function is done.
 ///
 /// \returns: true if node was found, eitherwise false.
-bool find_node_in_tree(char *find_key, tree *tree_root, node *dest_node);
+node *find_node_in_tree(char *find_key, tree *tree_root/*, node *dest_node*/);
 
 /// Auxilliary recursive function for find_node_in_tree that goes through each node to find a node that matches the key
 ///
@@ -89,13 +89,26 @@ node *find_node_in_tree_aux(char *key, node *root_node);
 /// \returns: true if rebalancing was successful
 bool tree_rebalance(tree *tree_root, node *to_rebalance);
 
+/// Shifts the replacement node to the to_rebalance node's position under the parent of to_rebalance. All pointers are correctly shifted.
+void tree_rebalance_parent_shift(node *replacement, node *to_rebalance);
+
+/// Shifts the replacement node to the to_rebalance node's position over the right child of to_rebalance. All pointers are correctly shifted. 
+void tree_rebalance_right_child_shift(node *replacement, node *to_rebalance);
+
+/// Shifts the replacement node to the to_rebalance node's position over the left child of to_rebalance. All pointers are correctly shifted. 
+void tree_rebalance_left_child_shift(node *replacement, node *to_rebalance);
+
 /// Finds the smallest subnode in a tree
 ///
 /// \returns: the smallest node found
 node *find_smallest_node(node *start);
 
+
+/* ---------------------------------------------------------------------- TEST CODE BELOW ---------------------------------------------------------------------------------- */
 tree *test_add_root(void);
 
 void test_add_to_tree(tree *target_tree);
+
+void test_remove_node(tree *input_tree);
 
 #endif /* tree_h */

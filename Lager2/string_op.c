@@ -36,8 +36,7 @@ int string_compare(char *first, char *second) {
 }
 
 void string_to_lower(char *string, char *after) {
-  strcpy(after, string);
-  
+  strncpy(after, string, (size_t) string_length(string));
   for (int i = 0; string[i] != '\0'; i++) {
     after[i] = tolower(string[i]);
   }

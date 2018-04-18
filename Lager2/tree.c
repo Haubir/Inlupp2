@@ -51,7 +51,7 @@ node **get_root(tree *input_tree) {
 
 /* Creates a new root for a tree */
 node **root_new() {
-  node **new_root = calloc(1, sizeof(node));
+  node **new_root = calloc(1, sizeof(node *));
   *new_root = NULL;
   return new_root;
 }
@@ -87,10 +87,14 @@ bool node_free(node *to_delete) {
   /*if (to_delete->ware) {
     ware_free(to_delete->ware);
   }*/
+  free(to_delete->parent);
+  free(to_delete->left);
+  free(to_delete->right);
   free(to_delete->key);
   free(to_delete);
+  to_delete = NULL;
   
-  return true;
+  return to_delete == NULL;
 }
 
 /* Calls on tree_node_insert to insert a node to the search tree, and updates the tree:s size and depth attributes if insertion was successful. */
@@ -145,165 +149,146 @@ bool tree_node_insert(node *start, node *to_insert) {
   }
 }
 
-// TODO!!!!
+// TODO!!! Noder tas bort random. Ibland funkar det, ibland inte. Fortsätt härifrån.
 /* Delete a node from the search tree */
-bool tree_node_remove(tree *tree_root, char *key) {
-  bool ret = false;
-  
-  node *to_delete = node_new();
-
-  if (!find_node_in_tree(key, tree_root, to_delete)) {
-    ret = false;
+bool tree_node_remove(tree *input_tree, char *key) {
+  if (*(input_tree->root) == NULL) {
+    printf("Attempted tree to delete from was NULL.\n");
+    return false;
   }
+
+  node *to_delete = find_node_in_tree(key, input_tree);
+  
+  if (!to_delete) return false; // The node to delete was not found
+  
   else {
-    if (to_delete->left || to_delete->right) tree_rebalance(tree_root, to_delete);
+    if (to_delete->left || to_delete->right) tree_rebalance(input_tree, to_delete);
     
     to_delete->left = NULL;
     to_delete->right = NULL;
     to_delete->parent = NULL;
     
-    tree_root->size--;
-    tree_root->depth--;
+    input_tree->size--;
+    input_tree->depth--;
     
-    ret = true;
+    if (!node_free(to_delete)) {
+      printf("The node was successfully removed from the tree but not free:d...\n");
+      return false;
+    }
+    else return true;
   }
-  
-  node_free(to_delete);
-  
-  return ret;
 }
 
 /* Searches through the tree to find a node that matches the input key. If a node is found, dest_node will point to it when the function is done. */
-bool find_node_in_tree(char *find_key, tree *tree_root, node *dest_node) {
+node *find_node_in_tree(char *find_key, tree *input_tree/*, node *dest_node*/) {
   
-  if (tree_root == NULL) {
+  if (*(input_tree->root) == NULL) {
     return false;
   }
   
-  node **root_node = tree_root->root;
-  
+  node **root_node = input_tree->root;
   node *test = find_node_in_tree_aux(find_key, *root_node);
   
+  return test;
+  
   // OBS: Kolla om lösningen nedan är korrekt kodad!!
-  if (test) {
+  /*if (test) {
     dest_node = test;
     return true;
   }
   else {
     node_free(dest_node);
     return false;
-  }
+    return NULL;
+  }*/
 }
 
 /* Auxilliary recursive function for find_node_in_tree that goes through each node to find a node that matches the key */
-node *find_node_in_tree_aux(char *key, node *root_node) {
-  int comparison = strcmp(key, root_node->key);
+node *find_node_in_tree_aux(char *key, node *start_node) {
+  int comparison = strcmp(key, start_node->key);
   
-  if (comparison < 0) { // Betyder att key kommer före root_node->key i alfabetisk ordning
-    if (root_node->left) {
-      return find_node_in_tree_aux(key, root_node->left);
+  if (comparison < 0) { // Betyder att key kommer före start_node->key i alfabetisk ordning
+    if (start_node->left) {
+      return find_node_in_tree_aux(key, start_node->left);
     }
     else {
       return NULL;
     }
   }
-  else if (comparison > 0) { // Betyder att key kommer efter root_node->key i alfabetisk ordning
-    if (root_node->right) {
-      return find_node_in_tree_aux(key, root_node->right);
+  else if (comparison > 0) { // Betyder att key kommer efter start_node->key i alfabetisk ordning
+    if (start_node->right) {
+      return find_node_in_tree_aux(key, start_node->right);
     }
     else {
       return NULL;
     }
   }
-  else { // Betyder att key == root_node->key
-    return root_node;
+  else { // Betyder att key == start_node->key
+    return start_node;
   }
 }
 
 /* Swaps a node that will be changed/deleted with a successor to keep the order in the binary search tree */
 bool tree_rebalance(tree *tree_root, node *to_rebalance) {
+  bool ret = false;
   node *replacement = to_rebalance;
   
   if (replacement->left) {
     replacement = replacement->left;
+    
     if (replacement->right) {
       while (replacement->right) {
         replacement = replacement->right;
       }
       if (replacement->left) {
-        replacement->parent->right = replacement->left; // Steg 1 på tavlan
-        replacement->left->parent = replacement->parent; // Steg 2 på tavlan
+        replacement->parent->right = replacement->left;
+        replacement->left->parent = replacement->parent;
       }
-      
+      tree_rebalance_parent_shift(replacement, to_rebalance);
+      tree_rebalance_left_child_shift(replacement, to_rebalance);
+      if (to_rebalance->right) tree_rebalance_right_child_shift(replacement, to_rebalance);
     }
-    if (to_rebalance->parent) { // KLAR
-      replacement->parent = to_rebalance->parent;
-      if (replacement->parent->left == to_rebalance) replacement->parent->left = replacement;
-      if (replacement->parent->right == to_rebalance) replacement->parent->right = replacement;
-      
-      if (to_rebalance->right) {
-        replacement->right = to_rebalance->right;
-        replacement->right->parent = replacement;
-      }
-    }
-  }
-  else if (replacement->right) { // KLAR
-    replacement = replacement->right;
-    replacement->parent = to_rebalance->parent;
-    if (to_rebalance->parent) {
-      replacement->parent = to_rebalance->parent;
-      if (replacement->parent->left == to_rebalance) replacement->parent->left = replacement;
-      if (replacement->parent->right == to_rebalance) replacement->parent->right = replacement;
+    else {
+      if (to_rebalance->parent) tree_rebalance_parent_shift(replacement, to_rebalance);
+      if (to_rebalance->right) tree_rebalance_right_child_shift(replacement, to_rebalance);
     }
     
-    return true;
+    ret = true;
+  }
+  else if (replacement->right) {
+    replacement = replacement->right;
+    if (to_rebalance->parent) tree_rebalance_parent_shift(replacement, to_rebalance);
+    
+    ret = true;
   }
   else {
-    return false; // We should not even be able to reach this part of the code, since this function should not be activated if to_rebalance does not have any children!
+    printf("Error: tree_rebalance activated despite the fact that to_rebalance does not have any children!!\n");
+    ret = false; // We should not even be able to reach this part of the code, since this function should not be activated if to_rebalance does not have any children!
   }
   
-  if (to_rebalance->parent) {
-    replacement->parent = to_rebalance->parent;
-    
-    if (replacement->parent->left == to_rebalance) replacement->parent->left = replacement;
-    if (replacement->parent->right == to_rebalance) replacement->parent->right = replacement;
-  }
-  
-  if (to_rebalance->right) {
-    replacement->right = to_rebalance->right;
-    replacement->right->parent = replacement;
-  }
-  
-  // Gammal kod nedan  
-  if (replacement->left) {
-    replacement->parent->right = replacement->left;
-  }
-  
-  replacement->left = to_rebalance->left;
-  replacement->right = to_rebalance->right;
-  
-  if (to_rebalance->left->parent == to_rebalance) {
-    to_rebalance->left->parent = replacement;
-  }
-  
-  if (to_rebalance->right->parent == to_rebalance) {
-    to_rebalance->right->parent = replacement;
-  }
-  
-  if (to_rebalance->parent->left == to_rebalance) {
-    to_rebalance->parent->left = replacement;
-  }
-  
-  if (to_rebalance->parent->right == to_rebalance) {
-    to_rebalance->parent->right = replacement;
-  }
-  
-  replacement->parent = to_rebalance->parent;
-  
-  return true;
+  return ret;
 }
 
-/* Finds the smallest subnode in a tree */
+/* Shifts the replacement node to the to_rebalance node's position under the parent of to_rebalance. All pointers are correctly shifted. */
+void tree_rebalance_parent_shift(node *replacement, node *to_rebalance) {
+  replacement->parent = to_rebalance->parent;
+  if (replacement->parent->left == to_rebalance) {replacement->parent->left = replacement; return;}
+  if (replacement->parent->right == to_rebalance) replacement->parent->right = replacement;
+}
+
+/* Shifts the replacement node to the to_rebalance node's position over the right child of to_rebalance. All pointers are correctly shifted. */
+void tree_rebalance_right_child_shift(node *replacement, node *to_rebalance) {
+  replacement->right = to_rebalance->right;
+  replacement->right->parent = replacement;
+}
+
+/* Shifts the replacement node to the to_rebalance node's position over the left child of to_rebalance. All pointers are correctly shifted. */
+void tree_rebalance_left_child_shift(node *replacement, node *to_rebalance) {
+  replacement->left = to_rebalance->left; 
+  replacement->left->parent = replacement; 
+}
+
+/* OBS! Behövs kanske inte!! Finds the smallest subnode in a tree */
 node *find_smallest_node(node *start) {
   node *iter = start;
   
@@ -316,6 +301,8 @@ node *find_smallest_node(node *start) {
   
   return iter;
 }
+
+/* ---------------------------------------------------------------------- TEST CODE BELOW ---------------------------------------------------------------------------------- */
 
 // Only for development purposes. Tests the ability to create a new tree with a root.
 tree *test_add_root() {
@@ -334,11 +321,12 @@ tree *test_add_root() {
   }
   else {
     printf("It was not possible to add a node to the test tree...\n");
+    free(node_name);
     return NULL;
   } 
 }
 
-// Only for development purposes. Tests the ability to nodes to a tree.
+// Only for development purposes. Tests the ability to add nodes to a tree.
 void test_add_to_tree(tree *target_tree) {
   node *test_node = node_new();
   
@@ -353,6 +341,22 @@ void test_add_to_tree(tree *target_tree) {
   }
   else {
     printf("It was not possible to add a node to the test tree...\n");
+    free(node_name);
   } 
 }
 
+// Only for development purposes. Tests the ability to remove a node from a tree.
+void test_remove_node(tree *input_tree) {
+  char *node_name = calloc(1024, sizeof(char));
+  string_entry("Please type the name of the node that you wish to delete: ", node_name);
+  strip_string(node_name);
+  
+  if (tree_node_remove(input_tree, node_name)) {
+    printf("A node was successfully removed from the tree!\n");
+  }
+  else {
+    printf("It was not possible to remove the node from the test tree...\n");
+  }
+  
+  free(node_name);
+}
