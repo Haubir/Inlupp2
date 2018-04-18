@@ -16,7 +16,7 @@ char *menu_string() {
 int main(int argc, const char * argv[]) {
   
   tree *main_tree = tree_new();
-  
+    
   while (1) {
     char *input_string = calloc(1024, sizeof(char));
     string_entry(menu_string(), input_string);
