@@ -33,7 +33,7 @@ int main(int argc, const char * argv[]) {
       printf("Du valde att lägga till en vara\n"); 
       node **root = get_root(main_tree);
       if (*root == NULL) {
-        tree *new_tree = test_add_root(); // Fortsätt härifrån, trädet som skapas i test_add_root() är inte samma som hamnar i main_tree efter anropet....
+        tree *new_tree = test_add_root();
         tree_copy(main_tree, new_tree);
       }
       else {

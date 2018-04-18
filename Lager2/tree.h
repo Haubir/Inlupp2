@@ -38,6 +38,9 @@ int tree_depth(tree *tree);
 /// \returns: the root of the tree
 node **get_root(tree *input_tree);
 
+/// Sets the tree root 
+void set_root(tree *input_tree, node **new_root);
+
 /// Creates a new root 
 ///
 /// \returns: a root
@@ -47,6 +50,38 @@ node **root_new(void);
 ///
 /// \returns: a empty node with an empty ware assigned to it
 node *node_new(void);
+
+/// Get the key of the input_node
+///
+/// \returns: the key
+char *get_key(node *input_node);
+
+/// Set the key of the input_node to the new_key
+void set_key(node *input_node, char *new_key);
+
+/// Get the left node of the input_node
+///
+/// \returns: the left node
+node *get_left_node(node *input_node);
+
+/// Set the left node of the input_node to the new_left
+void set_left_node(node *input_node, node *new_left);
+
+/// Get the right node of the input_node
+///
+/// \returns: the right node
+node *get_right_node(node *input_node);
+
+/// Set the right node of the input_node to the new_right
+void set_right_node(node *input_node, node *new_right);
+
+/// Get the parent node of the input_node
+///
+/// \returns: the parent node
+node *get_parent_node(node *input_node);
+
+/// Set the parent node of the input_node to the new_parent
+void set_parent_node(node *input_node, node *new_parent);
 
 /// Copies a tree into another tree
 void tree_copy(tree *destination, tree *source);
@@ -103,12 +138,5 @@ void tree_rebalance_left_child_shift(node *replacement, node *to_rebalance);
 /// \returns: the smallest node found
 node *find_smallest_node(node *start);
 
-
-/* ---------------------------------------------------------------------- TEST CODE BELOW ---------------------------------------------------------------------------------- */
-tree *test_add_root(void);
-
-void test_add_to_tree(tree *target_tree);
-
-void test_remove_node(tree *input_tree);
 
 #endif /* tree_h */

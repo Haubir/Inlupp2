@@ -49,6 +49,11 @@ node **get_root(tree *input_tree) {
   return input_tree->root;
 }
 
+/* Sets the tree root */
+void set_root(tree *input_tree, node **new_root) {
+  input_tree->root = new_root;
+}
+
 /* Creates a new root for a tree */
 node **root_new() {
   node **new_root = calloc(1, sizeof(node *));
@@ -67,6 +72,38 @@ node *node_new() {
   new_node->parent = NULL;
   
   return new_node;
+}
+
+char *get_key(node *input_node) {
+  return input_node->key;
+}
+
+void set_key(node *input_node, char *new_key) {
+  input_node->key = new_key; 
+}
+
+node *get_left_node(node *input_node) {
+  return input_node->left;
+}
+
+void set_left_node(node *input_node, node *new_left) {
+  input_node->left = new_left; 
+}
+
+node *get_right_node(node *input_node) {
+  return input_node->right;
+}
+
+void set_right_node(node *input_node, node *new_right) {
+  input_node->right = new_right; 
+}
+
+node *get_parent_node(node *input_node) {
+  return input_node->parent;
+}
+
+void set_parent_node(node *input_node, node *new_parent) {
+  input_node->parent = new_parent; 
 }
 
 /* Copies the source tree into the destination tree */
@@ -302,61 +339,3 @@ node *find_smallest_node(node *start) {
   return iter;
 }
 
-/* ---------------------------------------------------------------------- TEST CODE BELOW ---------------------------------------------------------------------------------- */
-
-// Only for development purposes. Tests the ability to create a new tree with a root.
-tree *test_add_root() {
-  tree *test_tree = tree_new();
-  node *test_node = node_new();
-
-  char *node_name = calloc(1024, sizeof(char));
-  string_entry("Please type a name for the new node: ", node_name);
-  strip_string(node_name);
-  
-  test_node->key = node_name;  
-  
-  if (tree_node_add(test_tree, test_node)) {
-    printf("A node was successfully added to the tree!\n");
-    return test_tree;
-  }
-  else {
-    printf("It was not possible to add a node to the test tree...\n");
-    free(node_name);
-    return NULL;
-  } 
-}
-
-// Only for development purposes. Tests the ability to add nodes to a tree.
-void test_add_to_tree(tree *target_tree) {
-  node *test_node = node_new();
-  
-  char *node_name = calloc(1024, sizeof(char));
-  string_entry("Please type a name for the new node: ", node_name);
-  strip_string(node_name);
-  
-  test_node->key = node_name;  
-  
-  if (tree_node_add(target_tree, test_node)) {
-    printf("A node was successfully added to the tree!\n");
-  }
-  else {
-    printf("It was not possible to add a node to the test tree...\n");
-    free(node_name);
-  } 
-}
-
-// Only for development purposes. Tests the ability to remove a node from a tree.
-void test_remove_node(tree *input_tree) {
-  char *node_name = calloc(1024, sizeof(char));
-  string_entry("Please type the name of the node that you wish to delete: ", node_name);
-  strip_string(node_name);
-  
-  if (tree_node_remove(input_tree, node_name)) {
-    printf("A node was successfully removed from the tree!\n");
-  }
-  else {
-    printf("It was not possible to remove the node from the test tree...\n");
-  }
-  
-  free(node_name);
-}
