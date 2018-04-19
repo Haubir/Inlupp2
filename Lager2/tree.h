@@ -129,6 +129,11 @@ node *find_node_in_tree(char *find_key, tree *tree_root/*, node *dest_node*/);
 /// \returns: the node if it is found, eitherwise NULL.
 node *find_node_in_tree_aux(char *key, node *root_node);
 
+/// Handles the rebalancing of the tree when the node that is to be deleted is the root node of the tree.
+///
+/// \returns: true if rebalancing was successful
+bool tree_rebalance_root(tree *input_tree);
+
 /// Swaps a node that will be changed/deleted with a successor to keep the order in the binary search tree
 ///
 /// \returns: true if rebalancing was successful
