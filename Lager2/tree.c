@@ -288,10 +288,20 @@ node *find_node_in_tree_aux(char *key, node *start_node) {
   }
 }
 
+/* Handles the rebalancing of the tree when the node that is to be deleted is the root node of the tree. */
+bool tree_rebalance_root(tree *input_tree) {
+  
+   return false;
+}
+
 /* Swaps a node that will be changed/deleted with a successor to keep the order in the binary search tree */
 bool tree_rebalance(tree *tree_root, node *to_rebalance) {
   bool ret = false;
   node *replacement = to_rebalance;
+  
+  if (to_rebalance == *(tree_root->root)) {
+    tree_rebalance_root(tree_root); // Fortsätt här när du är klar med att skriva funktionen
+  }
   
   if (replacement->left) {
     replacement = replacement->left;
