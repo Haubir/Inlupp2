@@ -51,6 +51,11 @@ node **root_new(void);
 /// \returns: a empty node with an empty ware assigned to it
 node *node_new(void);
 
+/// Compares the nodes and returns 0 if they have the same key.
+///
+/// \returns: true if the input nodes have the same key
+bool node_equals(node *first, node *second);
+
 /// Checks if the input_node has any children
 ///
 /// \returns: true if the node has any children
@@ -130,14 +135,12 @@ node *find_node_in_tree(char *find_key, tree *tree_root/*, node *dest_node*/);
 node *find_node_in_tree_aux(char *key, node *root_node);
 
 /// Handles the rebalancing of the tree when the node that is to be deleted is the root node of the tree.
-///
-/// \returns: true if rebalancing was successful
-bool tree_rebalance_root(tree *input_tree);
+void tree_rebalance_root_shift(tree *input_tree, node *replacement);
 
 /// Swaps a node that will be changed/deleted with a successor to keep the order in the binary search tree
 ///
 /// \returns: true if rebalancing was successful
-bool tree_rebalance(tree *tree_root, node *to_rebalance);
+bool tree_rebalance(tree *input_tree, node *to_rebalance);
 
 /// Shifts the replacement node to the to_rebalance node's position under the parent of to_rebalance. All pointers are correctly shifted.
 void tree_rebalance_parent_shift(node *replacement, node *to_rebalance);

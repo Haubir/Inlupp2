@@ -74,6 +74,11 @@ node *node_new() {
   return new_node;
 }
 
+/* Compares the nodes and returns 0 if they have the same key. */
+bool node_equals(node *first, node *second) {
+  return string_compare(node_get_key(first), node_get_key(second)) == 0;
+}
+
 bool node_has_children(node *input_node) {return (input_node->left || input_node->right);}
 
 char *node_get_key(node *input_node) {
@@ -153,11 +158,11 @@ bool node_free(node *to_delete) {
 }
 
 /* Calls on tree_node_insert to insert a node to the search tree, and updates the tree:s size and depth attributes if insertion was successful. */
-bool tree_node_add(tree *target_tree, node *to_insert) {
-  if (*(target_tree->root)) {
-    if (tree_node_insert(*(target_tree->root), to_insert)) {
-      target_tree->size++;
-      target_tree->depth++;
+bool tree_node_add(tree *input_tree, node *to_insert) {
+  if (*(input_tree->root)) {
+    if (tree_node_insert(*(input_tree->root), to_insert)) {
+      input_tree->size++;
+      input_tree->depth++;
       return true;
     }
     else {
@@ -166,11 +171,12 @@ bool tree_node_add(tree *target_tree, node *to_insert) {
     }
   }
   else {
-    *(target_tree->root) = calloc(1, sizeof(node));
-    node *tree_root = *(target_tree->root);
-    node_copy(tree_root, to_insert);
-    target_tree->size++;
-    target_tree->depth++;
+    *(input_tree->root) = calloc(1, sizeof(node));
+    node *root_node = *(input_tree->root);
+    node_copy(root_node, to_insert);
+    free(to_insert);
+    input_tree->size++;
+    input_tree->depth++;
     return true;
   }
 }
@@ -231,7 +237,14 @@ bool tree_node_remove(tree *input_tree, char *key) {
   node *to_delete = find_node_in_tree(key, input_tree);
   
   if (!to_delete) return false; // The node to delete was not found
-  else if (string_compare(node_get_key(to_delete), key) == 0) return tree_remove_root(input_tree);
+  else if (node_equals(to_delete, tree_root)) { 
+    if (tree_size(input_tree) == 1) return tree_remove_root(input_tree); // The node to remove is the root node and the root node is the only node in the tree. 
+    else {
+      
+      
+      return true;
+    }
+  }
   else {
     if (node_has_children(to_delete)) tree_rebalance(input_tree, to_delete);
     if (to_delete->parent->left == to_delete) to_delete->parent->left = NULL;
@@ -289,19 +302,28 @@ node *find_node_in_tree_aux(char *key, node *start_node) {
 }
 
 /* Handles the rebalancing of the tree when the node that is to be deleted is the root node of the tree. */
-bool tree_rebalance_root(tree *input_tree) {
+void tree_rebalance_root_shift(tree *input_tree, node *replacement) {
+  node **tree_root = input_tree->root;
+  node *root_node = *tree_root;
   
-   return false;
+  if (root_node->left) tree_rebalance_left_child_shift(replacement, root_node);
+  else if (root_node->right) tree_rebalance_right_child_shift(replacement, root_node);
+  else printf("tree_rebalance_root_shift: The root to rebalance has no children, this part of the code should be unreachable for this case...\n");
+  
+  *tree_root = replacement; // Fortsätt här
+  
 }
 
 /* Swaps a node that will be changed/deleted with a successor to keep the order in the binary search tree */
-bool tree_rebalance(tree *tree_root, node *to_rebalance) {
+bool tree_rebalance(tree *input_tree, node *to_rebalance) {
+  node *tree_root = *(input_tree->root);
   bool ret = false;
   node *replacement = to_rebalance;
   
-  if (to_rebalance == *(tree_root->root)) {
-    tree_rebalance_root(tree_root); // Fortsätt här när du är klar med att skriva funktionen
-  }
+  /*if (to_rebalance == tree_root) {
+    tree_rebalance_root(input_tree); // Fortsätt här när du är klar med att skriva funktionen
+  } // Detta kanske inte behövs göras här!
+  */
   
   if (replacement->left) {
     replacement = replacement->left;
@@ -314,8 +336,13 @@ bool tree_rebalance(tree *tree_root, node *to_rebalance) {
         replacement->parent->right = replacement->left;
         replacement->left->parent = replacement->parent;
       }
-      tree_rebalance_parent_shift(replacement, to_rebalance);
-      tree_rebalance_left_child_shift(replacement, to_rebalance);
+      if (node_equals(to_rebalance, tree_root)) {
+        tree_rebalance_root_shift(input_tree, replacement);
+      }
+      else {
+        tree_rebalance_parent_shift(replacement, to_rebalance);
+        tree_rebalance_left_child_shift(replacement, to_rebalance);
+      }
       if (to_rebalance->right) tree_rebalance_right_child_shift(replacement, to_rebalance);
     }
     else {
@@ -342,7 +369,10 @@ bool tree_rebalance(tree *tree_root, node *to_rebalance) {
 /* Shifts the replacement node to the to_rebalance node's position under the parent of to_rebalance. All pointers are correctly shifted. */
 void tree_rebalance_parent_shift(node *replacement, node *to_rebalance) {
   replacement->parent = to_rebalance->parent;
-  if (replacement->parent->left == to_rebalance) {replacement->parent->left = replacement; return;}
+  if (replacement->parent->left == to_rebalance) {
+    replacement->parent->left = replacement; 
+    return;
+  }
   if (replacement->parent->right == to_rebalance) replacement->parent->right = replacement;
 }
 
