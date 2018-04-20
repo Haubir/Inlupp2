@@ -299,14 +299,21 @@ void tree_rebalance_root_shift(tree *input_tree, node *replacement) {
   node **tree_root = input_tree->root;
   node *root_node = *tree_root;
   
-  if (root_node->left) tree_rebalance_left_child_shift(replacement, root_node);
-  if (root_node->right) tree_rebalance_right_child_shift(replacement, root_node);
+  if (root_node->left) { 
+    if (root_node->left == replacement) root_node->left = NULL;
+    else tree_rebalance_left_child_shift(replacement, root_node);
+  }
+  if (root_node->right) {
+    if (root_node->right == replacement) root_node->right = NULL;
+    else tree_rebalance_right_child_shift(replacement, root_node);
+  }
   if (replacement->parent) { 
     if (replacement->parent->right == replacement) replacement->parent->right = NULL;
+    if (replacement->parent->left == replacement) replacement->parent->left = NULL;
     replacement->parent = NULL;
   }
   
-  *tree_root = replacement; // Fortsätt här  
+  *tree_root = replacement;  
 }
 
 /* Swaps a node that will be changed/deleted with a successor to keep the order in the binary search tree */
@@ -314,11 +321,6 @@ bool tree_rebalance(tree *input_tree, node *to_rebalance) {
   node *tree_root = *(input_tree->root);
   bool ret = false;
   node *replacement = to_rebalance;
-  
-  /*if (to_rebalance == tree_root) {
-    tree_rebalance_root(input_tree); // Fortsätt här när du är klar med att skriva funktionen
-  } // Detta kanske inte behövs göras här!
-  */
   
   if (replacement->left) {
     replacement = replacement->left;
