@@ -220,7 +220,7 @@ bool tree_remove_root(tree *input_tree) {
   return true;
 }
 
-// TODO!!! Noder tas bort random. Ibland funkar det, ibland inte. Fortsätt härifrån.
+
 /* Delete a node from the search tree */
 bool tree_node_remove(tree *input_tree, char *key) {
   if (!tree_get_root(input_tree)) return false;
@@ -237,19 +237,12 @@ bool tree_node_remove(tree *input_tree, char *key) {
   node *to_delete = find_node_in_tree(key, input_tree);
   
   if (!to_delete) return false; // The node to delete was not found
-  else if (node_equals(to_delete, tree_root)) { 
-    if (tree_size(input_tree) == 1) return tree_remove_root(input_tree); // The node to remove is the root node and the root node is the only node in the tree. 
-    else {
-      
-      
-      return true;
-    }
-  }
   else {
     if (node_has_children(to_delete)) tree_rebalance(input_tree, to_delete);
-    if (to_delete->parent->left == to_delete) to_delete->parent->left = NULL;
-    if (to_delete->parent->right == to_delete) to_delete->parent->right = NULL;
-    
+    if (to_delete->parent) {
+      if (to_delete->parent->left == to_delete) to_delete->parent->left = NULL;
+      if (to_delete->parent->right == to_delete) to_delete->parent->right = NULL;
+    }
     to_delete->left = NULL;
     to_delete->right = NULL;
     to_delete->parent = NULL;
@@ -307,11 +300,13 @@ void tree_rebalance_root_shift(tree *input_tree, node *replacement) {
   node *root_node = *tree_root;
   
   if (root_node->left) tree_rebalance_left_child_shift(replacement, root_node);
-  else if (root_node->right) tree_rebalance_right_child_shift(replacement, root_node);
-  else printf("tree_rebalance_root_shift: The root to rebalance has no children, this part of the code should be unreachable for this case...\n");
+  if (root_node->right) tree_rebalance_right_child_shift(replacement, root_node);
+  if (replacement->parent) { 
+    if (replacement->parent->right == replacement) replacement->parent->right = NULL;
+    replacement->parent = NULL;
+  }
   
-  *tree_root = replacement; // Fortsätt här
-  
+  *tree_root = replacement; // Fortsätt här  
 }
 
 /* Swaps a node that will be changed/deleted with a successor to keep the order in the binary search tree */
@@ -336,26 +331,30 @@ bool tree_rebalance(tree *input_tree, node *to_rebalance) {
         replacement->parent->right = replacement->left;
         replacement->left->parent = replacement->parent;
       }
-      if (node_equals(to_rebalance, tree_root)) {
-        tree_rebalance_root_shift(input_tree, replacement);
-      }
+      
+      if (node_equals(to_rebalance, tree_root)) tree_rebalance_root_shift(input_tree, replacement);
       else {
         tree_rebalance_parent_shift(replacement, to_rebalance);
         tree_rebalance_left_child_shift(replacement, to_rebalance);
+        if (to_rebalance->right) tree_rebalance_right_child_shift(replacement, to_rebalance);
       }
-      if (to_rebalance->right) tree_rebalance_right_child_shift(replacement, to_rebalance);
-    }
+    } 
     else {
-      if (to_rebalance->parent) tree_rebalance_parent_shift(replacement, to_rebalance);
-      if (to_rebalance->right) tree_rebalance_right_child_shift(replacement, to_rebalance);
+      if (node_equals(to_rebalance, tree_root)) tree_rebalance_root_shift(input_tree, replacement);
+      else {
+        if (to_rebalance->parent) tree_rebalance_parent_shift(replacement, to_rebalance);
+        if (to_rebalance->right) tree_rebalance_right_child_shift(replacement, to_rebalance);
+      }
     }
     
     ret = true;
   }
   else if (replacement->right) {
     replacement = replacement->right;
-    if (to_rebalance->parent) tree_rebalance_parent_shift(replacement, to_rebalance);
-    
+    if (node_equals(to_rebalance, tree_root)) tree_rebalance_root_shift(input_tree, replacement);
+    else {
+      if (to_rebalance->parent) tree_rebalance_parent_shift(replacement, to_rebalance);
+    }
     ret = true;
   }
   else {

@@ -26,12 +26,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Lager2/tree.c"
-            timestampString = "545749998.708683"
+            timestampString = "545925909.126159"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "123"
-            endingLineNumber = "123"
-            landmarkName = "node_copy"
+            startingLineNumber = "128"
+            endingLineNumber = "128"
+            landmarkName = "tree_root_free"
             landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
