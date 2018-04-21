@@ -44,7 +44,10 @@ int main(int argc, const char * argv[]) {
       printf("Du valde att ta bort en vara\n");
       test_remove_node(main_tree);
     }
-    else if (string_compare(input_string_tolower, "r") == 0) {printf("Du valde att redigera en vara\n");}
+    else if (string_compare(input_string_tolower, "r") == 0) {
+      printf("Du valde att redigera en vara\n");
+      test_edit_node(main_tree);
+    }
     else if (string_compare(input_string_tolower, "g") == 0) {printf("Du valde att ångra den senaste ändringen\n");}
     else if (string_compare(input_string_tolower, "h") == 0) {printf("Du valde att lista hela varukorgen\n");}
     else if (string_compare(input_string_tolower, "p") == 0) {printf("Du valde att packa en pall\n");}
