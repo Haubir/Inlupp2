@@ -32,7 +32,7 @@ tree *test_add_root() {
 }
 
 // Only for development purposes. Tests the ability to add nodes to a tree.
-void test_add_to_tree(tree *target_tree) {
+void test_add_to_tree(tree *input_tree) {
   node *test_node = node_new();
   
   char *node_name = calloc(1024, sizeof(char));
@@ -41,7 +41,7 @@ void test_add_to_tree(tree *target_tree) {
   
   node_set_key(test_node, node_name);  
   
-  if (tree_node_add(target_tree, test_node)) {
+  if (tree_node_add(input_tree, test_node)) {
     printf("A node was successfully added to the tree!\n");
   }
   else {
@@ -64,4 +64,9 @@ void test_remove_node(tree *input_tree) {
   }
   
   free(node_name);
+}
+
+// Only for development purposes. Tests the ability to edit a node in the tree, and find a new position for it in the tree if necessary.
+void test_edit_node(tree *input_tree) {
+  printf("To be implemented...\n");
 }

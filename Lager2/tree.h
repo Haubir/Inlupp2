@@ -151,6 +151,11 @@ void tree_rebalance_right_child_shift(node *replacement, node *to_rebalance);
 /// Shifts the replacement node to the to_rebalance node's position over the left child of to_rebalance. All pointers are correctly shifted. 
 void tree_rebalance_left_child_shift(node *replacement, node *to_rebalance);
 
+/// Edits a node in the tree and rebalances the node if necessary
+///
+/// \returns: true if successful
+bool tree_node_edit(tree *input_tree, char *key);
+
 /// Finds the smallest subnode in a tree
 ///
 /// \returns: the smallest node found

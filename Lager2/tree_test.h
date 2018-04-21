@@ -15,9 +15,10 @@
 /* ---------------------------------------------------------------------- TEST CODE BELOW ---------------------------------------------------------------------------------- */
 tree *test_add_root(void);
 
-void test_add_to_tree(tree *target_tree);
+void test_add_to_tree(tree *input_tree);
 
 void test_remove_node(tree *input_tree);
 
+void test_edit_node(tree *input_tree);
 
 #endif /* tree_test_h */

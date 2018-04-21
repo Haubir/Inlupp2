@@ -231,8 +231,6 @@ bool tree_node_remove(tree *input_tree, char *key) {
     printf("Attempted tree to delete from was NULL.\n");
     return false;
   }
-
-  // TODO!! if (tree_root->key == key) tree_remove_root(input_tree);
   
   node *to_delete = find_node_in_tree(key, input_tree);
   
@@ -387,6 +385,31 @@ void tree_rebalance_right_child_shift(node *replacement, node *to_rebalance) {
 void tree_rebalance_left_child_shift(node *replacement, node *to_rebalance) {
   replacement->left = to_rebalance->left; 
   replacement->left->parent = replacement; 
+}
+
+/* Edits a node in the tree and rebalances the node if necessary */
+bool tree_node_edit(tree *input_tree, char *key) {
+  if (!tree_get_root(input_tree)) return false;
+  
+  node *tree_root = *(tree_get_root(input_tree));
+  
+  if (tree_root == NULL) {
+    printf("There are no nodes in the tree to edit...\n");
+    return false;
+  }
+  
+  node *to_edit = find_node_in_tree(key, input_tree);
+  
+  if (!to_edit) {
+    printf("The node to edit was not found in the tree...\n");
+    return false; // The node to edit was not found
+  }
+  else {
+    // io_edit_node(); <- Skriv denna funktion
+  }
+  
+  
+  return true;
 }
 
 /* OBS! Behövs kanske inte!! Finds the smallest subnode in a tree */
