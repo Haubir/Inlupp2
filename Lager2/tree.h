@@ -41,6 +41,9 @@ node **tree_get_root(tree *input_tree);
 /// Sets the tree root 
 void tree_set_root(tree *input_tree, node **new_root);
 
+/// Shows the nodes of the tree
+void tree_list_nodes(tree *input_tree);
+
 /// Creates a new root 
 ///
 /// \returns: a root
@@ -99,6 +102,18 @@ void tree_copy(tree *destination, tree *source);
 /// Copies a node into another node
 void node_copy(node *destination, node *source);
 
+/// Edits a node
+bool node_edit(node *input_node);
+
+/// Shows a node's information
+void node_show(node *input_node);
+
+/// Edits a node's name
+void node_name_edit(node *to_edit);
+
+/// Shows information about the shelves of a node's shelf-list
+void node_show_shelves_list(node *to_show);
+
 /// Calls on tree_node_insert to insert a node to the search tree, and updates the tree:s size and depth attributes if insertion was successful.
 ///
 /// \returns: true if insertion was completed successfully
@@ -154,7 +169,7 @@ void tree_rebalance_left_child_shift(node *replacement, node *to_rebalance);
 /// Edits a node in the tree and rebalances the node if necessary
 ///
 /// \returns: true if successful
-bool tree_node_edit(tree *input_tree, char *key);
+bool tree_node_edit(tree *input_tree);
 
 /// Finds the smallest subnode in a tree
 ///

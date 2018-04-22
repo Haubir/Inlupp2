@@ -54,6 +54,11 @@ void tree_set_root(tree *input_tree, node **new_root) {
   input_tree->root = new_root;
 }
 
+/// Shows the nodes of the tree
+void tree_list_nodes(tree *input_tree) {
+  printf("tree_list_nodes: To be implemented...\n");
+}
+
 /* Creates a new root for a tree */
 node **root_new() {
   node **new_root = calloc(1, sizeof(node *));
@@ -388,7 +393,7 @@ void tree_rebalance_left_child_shift(node *replacement, node *to_rebalance) {
 }
 
 /* Edits a node in the tree and rebalances the node if necessary */
-bool tree_node_edit(tree *input_tree, char *key) {
+bool tree_node_edit(tree *input_tree) {
   if (!tree_get_root(input_tree)) return false;
   
   node *tree_root = *(tree_get_root(input_tree));
@@ -398,19 +403,141 @@ bool tree_node_edit(tree *input_tree, char *key) {
     return false;
   }
   
+  tree_list_nodes(input_tree);
+  
+  char *key = calloc(1024, sizeof(char));
+  string_entry("Skriv namnet på varan som du önskar att redigera:", key);
   node *to_edit = find_node_in_tree(key, input_tree);
+  free(key);
   
   if (!to_edit) {
     printf("The node to edit was not found in the tree...\n");
     return false; // The node to edit was not found
   }
   else {
-    // io_edit_node(); <- Skriv denna funktion
+    // int []comparisons_before = node_comparisons_with_parent_and_children(to_edit);
+    node_edit(to_edit);
+    // int []comparisons_after = node_comparisons_with_parent_and_children(to_edit);
   }
   
+  /*
+  int comparison_after = string_compare(to_edit->key, to_edit->parent->key);
+  
+  if (comparison_after < 0) {}
+  else if (comparison_after > 0) {}
+  else {}
+  */
   
   return true;
 }
+
+// TODO!!!
+/// - Först ska nodens info visas på skärmen.
+/// - Sedan ska användaren få välja vilket attribut den vill ändra
+///
+/// \returns: true
+bool node_edit(node *input_node) {
+  char *answer = calloc(1, sizeof(char));
+  
+  printf("Vill du redigera varan?\nDitt svar: ");
+  while(string_compare(answer, "j") != 0 && string_compare(answer, "n") != 0){
+    string_entry("Svara 'j' för ja, 'n' för nej.", answer);
+  }
+  
+  if (string_compare(answer, "n") == 0){
+    free(answer);
+    return false;
+  }
+  
+  node_show(input_node);
+  string_entry("Vilket attribut vill du redigera?\n1: Redigera namn\n2: Redigera beskrivning\n3: Redigera pris\n4: Redigera hyllplats(er)", answer);
+  while ((string_compare(answer, "1") != 0) &&
+         (string_compare(answer, "2") != 0) &&
+         (string_compare(answer, "3") != 0) &&
+         (string_compare(answer, "4") != 0)) {
+    string_entry("Svara med 1-4 för att välja ett av alternativen eller skriv \"avsluta\" för att avsluta och återvända till huvudmenyn.", answer);
+    
+    if (string_compare(answer, "avsluta") == 0) {
+      string_entry("Är du säker på att du vill avsluta?\n(J/j) för ja, (N/n) för nej.", answer);
+      
+      if (string_compare(answer, "j") == 0) {
+        printf("Du har valt att avsluta.\n");
+        free(answer);
+        return false;
+      }
+    }
+  }
+  
+  switch (string_to_int(answer)) {
+    case 1:
+      node_name_edit(input_node);
+      break;
+      
+    case 2:
+      //ware_description_edit(input_node->ware);
+      break;
+      
+    case 3:
+      //ware_price_edit(input_node->ware);
+      break;
+      
+      /*    case 4:
+       ware_amount_edit(input_node->ware);
+       break;*/
+      
+    case 4:
+      //ware_shelves_edit(input_node->ware);
+      break;
+      
+    default:
+      break;
+  }
+  
+  free(answer);
+  return true;
+}
+
+/// Shows information about a node
+void node_show(node *input_node) {
+  if (input_node) {
+    printf("Name: %s\n", input_node->key);
+    //printf("Description: %s\n", ware_get_description(input_node->ware));
+    //printf("Price: %d\n", ware_get_price(input_node->ware));
+    //printf("Amount: %d\n", ware_get_amount(input_node->ware));
+    //node_show_shelves_list(input_node);
+  }
+}
+
+void node_name_edit(node *input_node) {
+  char *answer = calloc(1, sizeof(char));
+  string_entry("Enter a new name for your ware:", answer);
+  
+  strcpy(input_node->key, answer);
+  //ware_set_name(to_edit->ware, to_edit->key);
+  
+  free(answer);
+}
+
+/*
+/// Shows information about the shelves of a node's shelf-list
+
+void node_show_shelves_list(node *input_node) {
+  if (!ware_get_shelves_list(input_node->ware)) {
+    printf("Det finns ingen lista kaka, vad är de du försöker printa haa?\n");
+    return;
+  }
+  
+  printf("%s is in the following shelves: \n", input_node->key);
+  
+  list_node *iter = list_get_first(ware_get_shelves_list(input_node->ware));
+  
+  while(iter) {
+    void *iter_data = list_node_get_data(iter);
+    shelf_t *shelf_iter = (shelf_t *)iter_data;
+    printf("%s: %d pc\n", shelf_get_location(shelf_iter), shelf_get_quantity(shelf_iter));
+    iter = list_node_get_next(iter);
+  }
+} */
 
 /* OBS! Behövs kanske inte!! Finds the smallest subnode in a tree */
 node *find_smallest_node(node *start) {

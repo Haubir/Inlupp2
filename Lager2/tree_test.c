@@ -69,4 +69,5 @@ void test_remove_node(tree *input_tree) {
 // Only for development purposes. Tests the ability to edit a node in the tree, and find a new position for it in the tree if necessary.
 void test_edit_node(tree *input_tree) {
   printf("To be implemented...\n");
+  tree_node_edit(input_tree);
 }
