@@ -414,19 +414,19 @@ bool tree_node_edit(tree *input_tree) {
     printf("The node to edit was not found in the tree...\n");
     return false; // The node to edit was not found
   }
-  else {
-    // int []comparisons_before = node_comparisons_with_parent_and_children(to_edit);
-    node_edit(to_edit);
-    // int []comparisons_after = node_comparisons_with_parent_and_children(to_edit);
+  else {    
+    node *copy_of_edited = node_new();
+    node_copy(copy_of_edited, to_edit);
+    // Fortsätt här. Nyckeln verkar inte lagras på rätt sätt i copy_of_edited. Måste fixas innan nästa steg!
+    copy_of_edited->left = NULL;
+    copy_of_edited->right = NULL;
+    copy_of_edited->parent = NULL;
+    
+    tree_node_remove(input_tree, node_get_key(to_edit));
+    
+    node_edit(copy_of_edited);
+    tree_node_add(input_tree, copy_of_edited);
   }
-  
-  /*
-  int comparison_after = string_compare(to_edit->key, to_edit->parent->key);
-  
-  if (comparison_after < 0) {}
-  else if (comparison_after > 0) {}
-  else {}
-  */
   
   return true;
 }
@@ -437,7 +437,7 @@ bool tree_node_edit(tree *input_tree) {
 ///
 /// \returns: true
 bool node_edit(node *input_node) {
-  char *answer = calloc(1, sizeof(char));
+  char *answer = calloc(1024, sizeof(char));
   
   printf("Vill du redigera varan?\nDitt svar: ");
   while(string_compare(answer, "j") != 0 && string_compare(answer, "n") != 0){
@@ -500,7 +500,7 @@ bool node_edit(node *input_node) {
 /// Shows information about a node
 void node_show(node *input_node) {
   if (input_node) {
-    printf("Name: %s\n", input_node->key);
+    printf("Namn: %s\n", input_node->key);
     //printf("Description: %s\n", ware_get_description(input_node->ware));
     //printf("Price: %d\n", ware_get_price(input_node->ware));
     //printf("Amount: %d\n", ware_get_amount(input_node->ware));
@@ -510,12 +510,13 @@ void node_show(node *input_node) {
 
 void node_name_edit(node *input_node) {
   char *answer = calloc(1, sizeof(char));
-  string_entry("Enter a new name for your ware:", answer);
+  string_entry("Skriv ett nytt namn för varan:", answer);
   
-  strcpy(input_node->key, answer);
+  //free(node_get_key(input_node));
+  
+  node_set_key(input_node, answer);
+
   //ware_set_name(to_edit->ware, to_edit->key);
-  
-  free(answer);
 }
 
 /*

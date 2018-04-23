@@ -13,7 +13,10 @@
 
 
 /* ---------------------------------------------------------------------- TEST CODE BELOW ---------------------------------------------------------------------------------- */
-tree *test_add_root(void);
+
+tree *preset_tree(void);
+
+tree *test_add_root(char *key);
 
 void test_add_to_tree(tree *input_tree);
 

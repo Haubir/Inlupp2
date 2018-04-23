@@ -9,16 +9,40 @@
 #include "tree_test.h"
 /* ---------------------------------------------------------------------- TEST CODE BELOW ---------------------------------------------------------------------------------- */
 
+// Only for development purposes. Creates a new tree with 7 nodes. 
+tree *preset_tree() {
+  tree *new_tree = test_add_root("e");
+  
+  const char *list[6] = {"o", "j", "m", "g", "f", "h"};
+  char *key_list[6];
+  for (int i = 0; i < 6; i++) {
+    char *new_key = calloc(1, sizeof(char *));
+    strncpy(new_key, list[i], sizeof(char *));
+    key_list[i] = new_key;
+  }
+  
+  for (int i = 0; i < 6; i++) { 
+    node *new_node = node_new();
+    node_set_key(new_node, key_list[i]);
+    tree_node_add(new_tree, new_node);
+  }
+  
+  return new_tree;
+}
+
 // Only for development purposes. Tests the ability to create a new tree with a root.
-tree *test_add_root() {
+tree *test_add_root(char *node_name) {
   tree *test_tree = tree_new();
   node *test_node = node_new();
   
-  char *node_name = calloc(1024, sizeof(char));
-  string_entry("Please type a name for the new node: ", node_name);
-  strip_string(node_name);
-  
-  node_set_key(test_node, node_name);  
+  if (node_name == NULL) {
+    node_name = calloc(1024, sizeof(char));
+    string_entry("Please type a name for the new node: ", node_name);
+    strip_string(node_name);
+    
+  }
+    
+  node_set_key(test_node, node_name);
   
   if (tree_node_add(test_tree, test_node)) {
     printf("A node was successfully added to the tree!\n");

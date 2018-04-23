@@ -28,13 +28,14 @@ int main(int argc, const char * argv[]) {
     printf("input_string_tolower: %s\n", input_string_tolower);
     strip_string(input_string_tolower);
     
-    if (string_length(input_string_tolower) > 1){printf("Din input matchade inte något av alternativen från menyn. Försök igen.\n");}
+    if ((string_length(input_string_tolower) > 1) && (string_compare(input_string_tolower, "preset") != 0)){printf("Din input matchade inte något av alternativen från menyn. Försök igen.\n");}
     else if (string_compare(input_string_tolower, "l") == 0) {
       printf("Du valde att lägga till en vara\n"); 
       node **root = tree_get_root(main_tree);
       if (root == NULL) {
-        tree *new_tree = test_add_root();
+        tree *new_tree = test_add_root(NULL);
         tree_copy(main_tree, new_tree);
+        free(new_tree);
       }
       else {
         test_add_to_tree(main_tree);
@@ -52,6 +53,12 @@ int main(int argc, const char * argv[]) {
     else if (string_compare(input_string_tolower, "h") == 0) {printf("Du valde att lista hela varukorgen\n");}
     else if (string_compare(input_string_tolower, "p") == 0) {printf("Du valde att packa en pall\n");}
     else if (string_compare(input_string_tolower, "a") == 0) {printf("Du valde att avsluta programmet\n"); exit(0);}
+    else if (string_compare(input_string_tolower, "preset") == 0) {
+      printf("Du valde att skapa ett träd med 7 förinställda noder.\n");
+      tree *new_tree = preset_tree();
+      tree_copy(main_tree, new_tree);
+      free(new_tree);
+    }
     else {printf("Din input matchade inte något av alternativen från menyn. Försök igen.\n");}
   }
   
