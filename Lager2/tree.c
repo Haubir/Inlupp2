@@ -120,12 +120,26 @@ void set_parent_node(node *input_node, node *new_parent) {
 
 /* Copies the source tree into the destination tree */
 void tree_copy(tree *destination, tree *source) {
-  memcpy(destination, source, sizeof(tree));
+  destination->root = source->root;
+  destination->depth = source->depth;
+  destination->size = source->size;
+  //memcpy(destination, source, sizeof(tree));
+  
 }
 
 /* Copies the source node into the destination node */
 void node_copy(node *destination, node *source) {
-  memcpy(destination, source, sizeof(node));
+  char *dest_key = string_new();
+  string_copy(dest_key, node_get_key(source));
+  node_set_key(destination, dest_key);
+  // ware *dest_ware = ware_new();
+  // ware_copy(dest_ware, node_get_ware(source));
+  // node_set_ware(destination, dest_ware);
+  set_left_node(destination, get_left_node(source));
+  set_parent_node(destination, get_parent_node(source));
+  set_right_node(destination, get_right_node(source));
+  
+  //memcpy(destination, source, sizeof(node));
 }
 
 /* Free:s up the memory that was allocated for the root */
@@ -339,6 +353,8 @@ bool tree_rebalance(tree *input_tree, node *to_rebalance) {
       
       if (node_equals(to_rebalance, tree_root)) tree_rebalance_root_shift(input_tree, replacement);
       else {
+        if (replacement->parent->left == replacement) replacement->parent->left = NULL;
+        if (replacement->parent->right == replacement) replacement->parent->right = NULL;
         tree_rebalance_parent_shift(replacement, to_rebalance);
         tree_rebalance_left_child_shift(replacement, to_rebalance);
         if (to_rebalance->right) tree_rebalance_right_child_shift(replacement, to_rebalance);
@@ -405,7 +421,7 @@ bool tree_node_edit(tree *input_tree) {
   
   tree_list_nodes(input_tree);
   
-  char *key = calloc(1024, sizeof(char));
+  char *key = string_new();
   string_entry("Skriv namnet på varan som du önskar att redigera:", key);
   node *to_edit = find_node_in_tree(key, input_tree);
   free(key);
@@ -418,14 +434,15 @@ bool tree_node_edit(tree *input_tree) {
     node *copy_of_edited = node_new();
     node_copy(copy_of_edited, to_edit);
     // Fortsätt här. Nyckeln verkar inte lagras på rätt sätt i copy_of_edited. Måste fixas innan nästa steg!
+    
     copy_of_edited->left = NULL;
     copy_of_edited->right = NULL;
     copy_of_edited->parent = NULL;
     
     tree_node_remove(input_tree, node_get_key(to_edit));
     
-    node_edit(copy_of_edited);
-    tree_node_add(input_tree, copy_of_edited);
+    if (node_edit(copy_of_edited)) tree_node_add(input_tree, copy_of_edited);
+    else node_free(copy_of_edited);
   }
   
   return true;
@@ -437,7 +454,7 @@ bool tree_node_edit(tree *input_tree) {
 ///
 /// \returns: true
 bool node_edit(node *input_node) {
-  char *answer = calloc(1024, sizeof(char));
+  char *answer = string_new();
   
   printf("Vill du redigera varan?\nDitt svar: ");
   while(string_compare(answer, "j") != 0 && string_compare(answer, "n") != 0){
@@ -450,11 +467,12 @@ bool node_edit(node *input_node) {
   }
   
   node_show(input_node);
-  string_entry("Vilket attribut vill du redigera?\n1: Redigera namn\n2: Redigera beskrivning\n3: Redigera pris\n4: Redigera hyllplats(er)", answer);
+  string_entry("Svara med 1-4 för att välja ett av alternativen eller skriv \"avsluta\" för att avsluta och återvända till huvudmenyn.\n1: Redigera namn\n2: Redigera beskrivning\n3: Redigera pris\n4: Redigera hyllplats(er)", answer);
   while ((string_compare(answer, "1") != 0) &&
          (string_compare(answer, "2") != 0) &&
          (string_compare(answer, "3") != 0) &&
-         (string_compare(answer, "4") != 0)) {
+         (string_compare(answer, "4") != 0) &&
+         (string_compare(answer, "avsluta") != 0)) {
     string_entry("Svara med 1-4 för att välja ett av alternativen eller skriv \"avsluta\" för att avsluta och återvända till huvudmenyn.", answer);
     
     if (string_compare(answer, "avsluta") == 0) {
@@ -509,11 +527,11 @@ void node_show(node *input_node) {
 }
 
 void node_name_edit(node *input_node) {
-  char *answer = calloc(1, sizeof(char));
+  char *answer = string_new();
   string_entry("Skriv ett nytt namn för varan:", answer);
   
-  //free(node_get_key(input_node));
-  
+  free(node_get_key(input_node));
+  node_set_key(input_node, NULL);
   node_set_key(input_node, answer);
 
   //ware_set_name(to_edit->ware, to_edit->key);

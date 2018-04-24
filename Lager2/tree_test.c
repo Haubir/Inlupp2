@@ -13,11 +13,11 @@
 tree *preset_tree() {
   tree *new_tree = test_add_root("e");
   
-  const char *list[6] = {"o", "j", "m", "g", "f", "h"};
+  char *list[6] = {"o", "j", "m", "g", "f", "h"};
   char *key_list[6];
   for (int i = 0; i < 6; i++) {
-    char *new_key = calloc(1, sizeof(char *));
-    strncpy(new_key, list[i], sizeof(char *));
+    char *new_key = calloc(1024, sizeof(char));
+    strncpy(new_key, list[i], (size_t) string_length(list[i]));
     key_list[i] = new_key;
   }
   

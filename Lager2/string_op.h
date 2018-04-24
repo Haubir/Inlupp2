@@ -15,6 +15,12 @@
 #include <stdbool.h>
 #include <ctype.h>
 
+/* Allocates memory for a string and returns it. */
+char *string_new(void);
+
+/* Copies the source string into the destination string. */
+void string_copy(char *destination, char *source);
+
 /* Compares two strings and determines which one comes first in alphabetical order or if they are the same word. */
 int string_compare(char *first, char *second);
 

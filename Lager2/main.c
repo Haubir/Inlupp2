@@ -31,15 +31,7 @@ int main(int argc, const char * argv[]) {
     if ((string_length(input_string_tolower) > 1) && (string_compare(input_string_tolower, "preset") != 0)){printf("Din input matchade inte något av alternativen från menyn. Försök igen.\n");}
     else if (string_compare(input_string_tolower, "l") == 0) {
       printf("Du valde att lägga till en vara\n"); 
-      node **root = tree_get_root(main_tree);
-      if (root == NULL) {
-        tree *new_tree = test_add_root(NULL);
-        tree_copy(main_tree, new_tree);
-        free(new_tree);
-      }
-      else {
-        test_add_to_tree(main_tree);
-      }
+      test_add_to_tree(main_tree);
     }
     else if (string_compare(input_string_tolower, "t") == 0) {
       printf("Du valde att ta bort en vara\n");

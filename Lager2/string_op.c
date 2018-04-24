@@ -8,6 +8,15 @@
 
 #include "string_op.h"
 
+char *string_new() {
+  char *new_string = calloc(1024, sizeof(char));
+  
+  return new_string;
+}
+
+void string_copy(char *destination, char *source) {
+  strncpy(destination, source, (size_t) string_length(source));
+}
 
 int string_compare(char *first, char *second) {
   char *first_lowercase = calloc(string_length(first), sizeof(char));
@@ -73,7 +82,7 @@ int string_length(char *string) {
 
 void string_entry(char *input_text, char *result) {
   size_t buffer_len = 1024;
-  char *buffer = calloc(buffer_len, sizeof(char));
+  char *buffer = string_new();
   
   printf("%s\n", input_text);
   getline(&buffer, &buffer_len, stdin);
@@ -95,7 +104,7 @@ void strip_string(char *buffer) {
 }
 
 void int_entry(char *input_text, int result) {
-  char *int_string = calloc(1, sizeof(char));
+  char *int_string = string_new();
   string_entry(input_text, int_string);
   
   while (!is_int(int_string)) {
