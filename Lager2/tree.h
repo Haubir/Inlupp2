@@ -44,6 +44,9 @@ void tree_set_root(tree *input_tree, node **new_root);
 /// Shows the nodes of the tree
 void tree_list_nodes(tree *input_tree);
 
+/// Auxilliary function for tree_list_nodes, that traverses through the tree and prints information about all the nodes in the tree
+void tree_list_nodes_aux(node *iter);
+
 /// Creates a new root 
 ///
 /// \returns: a root

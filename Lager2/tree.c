@@ -54,9 +54,28 @@ void tree_set_root(tree *input_tree, node **new_root) {
   input_tree->root = new_root;
 }
 
-/// Shows the nodes of the tree
+/* Shows the nodes of the tree */
 void tree_list_nodes(tree *input_tree) {
-  printf("tree_list_nodes: To be implemented...\n");
+  node **root_pointer = tree_get_root(input_tree);
+  node *root_node = *root_pointer;
+  if (!root_node) {
+    printf("Det finns inga varor i databasen.\n\n\n");
+    return;
+  }
+  
+  if (!node_has_children(root_node)) {
+    node_show(root_node);
+    return;
+  }
+  
+  tree_list_nodes_aux(root_node);
+}
+
+/* Auxilliary function for tree_list_nodes, that traverses through the tree and prints information about all the nodes in the tree */
+void tree_list_nodes_aux(node *iter) {
+  if (iter->left) tree_list_nodes_aux(iter->left);
+  node_show(iter);
+  if (iter->right) tree_list_nodes_aux(iter->right);
 }
 
 /* Creates a new root for a tree */
@@ -144,17 +163,15 @@ void node_copy(node *destination, node *source) {
 
 /* Free:s up the memory that was allocated for the root */
 bool tree_root_free(node **input_root) {
-  node *tree_root = *input_root;
-  if (!tree_root) {
+  if (!*(input_root)) {
     return true;
   }
   
-  node_free(tree_root);
+  node_free(*input_root);
+  *input_root = NULL;
+  bool ret = *input_root == NULL;
   
-  free(input_root);
-  input_root = NULL;
-  
-  return input_root == NULL;
+  return ret;
 }
 
 
@@ -166,9 +183,9 @@ bool node_free(node *to_delete) {
   /*if (to_delete->ware) {
     ware_free(to_delete->ware);
   }*/
-  free(to_delete->parent);
-  free(to_delete->left);
-  free(to_delete->right);
+  to_delete->parent = NULL;
+  to_delete->left = NULL;
+  to_delete->right = NULL;
   free(to_delete->key);
   free(to_delete);
   to_delete = NULL;
@@ -232,7 +249,7 @@ bool tree_node_insert(node *start, node *to_insert) {
 bool tree_remove_root(tree *input_tree) {
   tree_root_free(input_tree->root);
   
-  input_tree->root = NULL;
+  *(input_tree->root) = NULL;
   input_tree->size--;
   input_tree->depth--;
   
@@ -244,9 +261,9 @@ bool tree_remove_root(tree *input_tree) {
 bool tree_node_remove(tree *input_tree, char *key) {
   if (!tree_get_root(input_tree)) return false;
   
-  node *tree_root = *(tree_get_root(input_tree));
+  node *root_node = *(tree_get_root(input_tree));
   
-  if (tree_root == NULL) {
+  if (root_node == NULL) {
     printf("Attempted tree to delete from was NULL.\n");
     return false;
   }
@@ -254,6 +271,9 @@ bool tree_node_remove(tree *input_tree, char *key) {
   node *to_delete = find_node_in_tree(key, input_tree);
   
   if (!to_delete) return false; // The node to delete was not found
+  else if (node_equals(root_node, to_delete) && !node_has_children(root_node)) {
+    return tree_remove_root(input_tree); // The node to_delete is the root node and the root node is the only node in the tree 
+  }
   else {
     if (node_has_children(to_delete)) tree_rebalance(input_tree, to_delete);
     if (to_delete->parent) {

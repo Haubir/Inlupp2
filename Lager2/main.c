@@ -42,7 +42,10 @@ int main(int argc, const char * argv[]) {
       test_edit_node(main_tree);
     }
     else if (string_compare(input_string_tolower, "g") == 0) {printf("Du valde att ångra den senaste ändringen\n");}
-    else if (string_compare(input_string_tolower, "h") == 0) {printf("Du valde att lista hela varukorgen\n");}
+    else if (string_compare(input_string_tolower, "h") == 0) {
+      printf("Du valde att lista hela varukorgen\n");
+      tree_list_nodes(main_tree);
+    }
     else if (string_compare(input_string_tolower, "p") == 0) {printf("Du valde att packa en pall\n");}
     else if (string_compare(input_string_tolower, "a") == 0) {printf("Du valde att avsluta programmet\n"); exit(0);}
     else if (string_compare(input_string_tolower, "preset") == 0) {
