@@ -36,10 +36,9 @@ tree *test_add_root(char *node_name) {
   node *test_node = node_new();
   
   if (node_name == NULL) {
-    node_name = calloc(1024, sizeof(char));
+    node_name = string_new();
     string_entry("Please type a name for the new node: ", node_name);
     strip_string(node_name);
-    
   }
     
   node_set_key(test_node, node_name);
@@ -59,7 +58,7 @@ tree *test_add_root(char *node_name) {
 void test_add_to_tree(tree *input_tree) {
   node *test_node = node_new();
   
-  char *node_name = calloc(1024, sizeof(char));
+  char *node_name = string_new();
   string_entry("Please type a name for the new node: ", node_name);
   strip_string(node_name);
   

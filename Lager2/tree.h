@@ -9,10 +9,7 @@
 #ifndef tree_h
 #define tree_h
 
-#include <stdio.h>
-#include <stdbool.h>
-#include <stdlib.h>
-#include "string_op.h"
+#include "ware.h"
 
 typedef struct tree tree;
 
