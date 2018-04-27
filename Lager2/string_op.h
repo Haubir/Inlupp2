@@ -21,8 +21,11 @@ char *string_new(void);
 /* Copies the source string into the destination string. */
 void string_copy(char *destination, char *source);
 
-/* Compares two strings and determines which one comes first in alphabetical order or if they are the same word. */
+/* Compares two strings and determines which one comes first in alphabetical order or if they are equal. */
 int string_compare(char *first, char *second);
+
+/* Checks if the two input strings are equal. */
+bool string_equals(char *first, char *second);
 
 /* Converts all characters to lower case. */
 void string_to_lower(char *string, char *after);

@@ -9,10 +9,7 @@
 #ifndef ware_h
 #define ware_h
 
-#include <stdio.h>
-#include <stdbool.h>
-#include <stdlib.h>
-#include "string_op.h"
+#include "shelves_list.h"
 
 typedef struct ware ware;
 

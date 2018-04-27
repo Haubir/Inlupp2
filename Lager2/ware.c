@@ -13,7 +13,7 @@ struct ware {
   char *description;
   int price;
   int amount;
-  // list *shelves;
+  shelves_list *shelves;
 };
 
 /* Allocates memory for an empty ware and returns it */
@@ -23,7 +23,7 @@ ware *ware_new(){
   new_ware->description = NULL;
   new_ware->price = 0;
   new_ware->amount = 0;
-  //new_ware->shelves = NULL;
+  new_ware->shelves = shelves_new();
   
   return new_ware;
 }

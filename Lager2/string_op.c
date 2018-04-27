@@ -44,6 +44,10 @@ int string_compare(char *first, char *second) {
   }
 }
 
+bool string_equals(char *first, char *second) {
+  return string_compare(first, second) == 0;
+}
+
 void string_to_lower(char *string, char *after) {
   strncpy(after, string, (size_t) string_length(string));
   for (int i = 0; string[i] != '\0'; i++) {
