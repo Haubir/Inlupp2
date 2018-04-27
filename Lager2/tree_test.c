@@ -31,17 +31,17 @@ tree *preset_tree() {
 }
 
 // Only for development purposes. Tests the ability to create a new tree with a root.
-tree *test_add_root(char *node_name) {
+tree *test_add_root(char *ware_name) {
   tree *test_tree = tree_new();
   node *test_node = node_new();
   
-  if (node_name == NULL) {
-    node_name = string_new();
-    string_entry("Please type a name for the new node: ", node_name);
-    strip_string(node_name);
+  if (ware_name == NULL) {
+    ware_name = string_new();
+    string_entry("Please type a name for the new ware: ", ware_name);
+    strip_string(ware_name);
   }
-    
-  node_set_key(test_node, node_name);
+  ware_set_key(node_get_ware(test_node), ware_name);
+  node_set_key(test_node, ware_name);
   
   if (tree_node_add(test_tree, test_node)) {
     printf("A node was successfully added to the tree!\n");
@@ -49,7 +49,7 @@ tree *test_add_root(char *node_name) {
   }
   else {
     printf("It was not possible to add a node to the test tree...\n");
-    free(node_name);
+    free(ware_name);
     return NULL;
   } 
 }
@@ -58,18 +58,19 @@ tree *test_add_root(char *node_name) {
 void test_add_to_tree(tree *input_tree) {
   node *test_node = node_new();
   
-  char *node_name = string_new();
-  string_entry("Please type a name for the new node: ", node_name);
-  strip_string(node_name);
+  char *ware_name = string_new();
+  string_entry("Please type a name for the new ware: ", ware_name);
+  strip_string(ware_name);
   
-  node_set_key(test_node, node_name);  
+  ware_set_key(node_get_ware(test_node), ware_name);
+  node_set_key(test_node, ware_name);  
   
   if (tree_node_add(input_tree, test_node)) {
     printf("A node was successfully added to the tree!\n");
   }
   else {
     printf("It was not possible to add a node to the test tree...\n");
-    free(node_name);
+    free(ware_name);
   } 
 }
 

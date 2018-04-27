@@ -15,6 +15,7 @@ struct ware {
   // list *shelves;
 };
 
+/* Allocates memory for an empty ware and returns it */
 ware *ware_new(){
   ware *new_ware = calloc(1, sizeof(ware));
   new_ware->key = NULL;
@@ -23,6 +24,25 @@ ware *ware_new(){
   //new_ware->shelves = NULL;
   
   return new_ware;
+}
+
+/* Free:s up the memory that was allocated for a ware */
+bool ware_free(ware *to_delete) {
+  free(to_delete->key);
+  to_delete->price = 0;
+  to_delete->amount = 0;
+  
+  /*if (to_delete->shelves) {
+    shelves_free(to_delete->shelves);
+    to_delete->shelves = NULL;
+  } */
+  
+  free(to_delete);
+  to_delete = NULL;
+  
+  bool ret = to_delete == NULL;
+  
+  return ret;
 }
 
 /* Sets a new key for the ware */
@@ -45,27 +65,32 @@ void ware_increment_amount(ware *input_ware, int amount) {
   input_ware->amount += amount;
 }
 
+/* Decrements the amount of the ware */
+void ware_decrement_amount(ware *input_ware, int amount) {
+  input_ware->amount -= amount;
+}
+
 /* Sets a new list of shelves for the ware */
 /*void ware_set_shelves(ware *input_ware, list *shelves) {
   input_ware->shelves = shelves;
  } */
 
-/* Sets a new key for the ware */
+/* Returns the key of the ware */
 char *ware_get_key(ware *input_ware) {
   return input_ware->key;
 }
 
-/* Sets a new price for the ware */
+/* Returns the price of the ware */
 int ware_get_price(ware *input_ware) {
   return input_ware->price;
 }
 
-/* Sets a new amount for the ware */
+/* Returns the amount of the ware */
 int ware_get_amount(ware *input_ware) {
   return input_ware->amount;
 }
 
-/* Sets a new list of shelves for the ware */
+/* Returns the list of shelves for the ware */
 /*list *ware_get_shelves(ware *input_ware) {
   return input_ware->shelves;
  } */
@@ -79,6 +104,7 @@ void ware_show(ware *input_ware) {
   shelves_show(input_ware->shelves);*/
 }
 
+/* Add information to the ware, such as name, price, amount and locations. */
 void ware_enter_information(ware *input_ware) {
   char *new_key = string_new();
   int new_price = 0;

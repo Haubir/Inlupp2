@@ -64,6 +64,14 @@ bool node_equals(node *first, node *second);
 /// \returns: true if the node has any children
 bool node_has_children(node *input_node);
 
+/// Get the ware of the input_node
+///
+/// \returns: the ware
+ware *node_get_ware(node *input_node);
+
+/// Sets the ware of the input_node to the new_ware
+void node_set_ware(node *input_node, ware *new_ware);
+
 /// Get the key of the input_node
 ///
 /// \returns: the key
@@ -124,6 +132,11 @@ bool tree_node_add(tree *tree_root, node *to_insert);
 /// \returns: true if insertion was completed successfully
 bool tree_node_insert(node *start, node *to_insert);
 
+/// Removes the root of the input_tree
+///
+/// \returns: true
+bool tree_remove_root(tree *input_tree);
+
 /// Delete a node from the search tree
 ///
 /// \returns: true if node deletion was successful
@@ -170,6 +183,12 @@ void tree_rebalance_left_child_shift(node *replacement, node *to_rebalance);
 ///
 /// \returns: true if successful
 bool tree_node_edit(tree *input_tree);
+
+/// Displays the input_node's contents
+void node_show(node *input_node);
+
+/// Edit the key of the input_node
+void node_name_edit(node *input_node);
 
 /// Finds the smallest subnode in a tree
 ///

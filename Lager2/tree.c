@@ -15,7 +15,7 @@ struct tree {
 };
 
 struct node {
-  //ware *ware; // Points to the ware
+  ware *ware; // Points to the ware
   char *key; // The key decides the position of the node in the search tree
   node *left; // Points to the left child
   node *right; // Points to the right child
@@ -89,7 +89,7 @@ node **root_new() {
 node *node_new() {
   node *new_node = calloc(1, sizeof(node));
   
-  //new_node->ware = ware_new();
+  new_node->ware = ware_new();
   new_node->key = NULL;
   new_node->left = NULL;
   new_node->right = NULL;
@@ -104,6 +104,14 @@ bool node_equals(node *first, node *second) {
 }
 
 bool node_has_children(node *input_node) {return (input_node->left || input_node->right);}
+
+ware *node_get_ware(node *input_node) {
+  return input_node->ware;
+}
+
+void node_set_ware(node *input_node, ware *new_ware) {
+  input_node->ware = new_ware; 
+}
 
 char *node_get_key(node *input_node) {
   return input_node->key;
@@ -174,15 +182,15 @@ bool tree_root_free(node **input_root) {
   return ret;
 }
 
-
 /* Free:s up the memory that was allocated for a node */
 bool node_free(node *to_delete) {
   if (!to_delete) {
     return true;
   }
-  /*if (to_delete->ware) {
+  if (to_delete->ware) {
     ware_free(to_delete->ware);
-  }*/
+    to_delete->ware = NULL;
+  }
   to_delete->parent = NULL;
   to_delete->left = NULL;
   to_delete->right = NULL;
@@ -190,7 +198,9 @@ bool node_free(node *to_delete) {
   free(to_delete);
   to_delete = NULL;
   
-  return to_delete == NULL;
+  bool ret = to_delete == NULL;
+  
+  return ret;
 }
 
 /* Calls on tree_node_insert to insert a node to the search tree, and updates the tree:s size and depth attributes if insertion was successful. */
@@ -246,6 +256,7 @@ bool tree_node_insert(node *start, node *to_insert) {
   }
 }
 
+/* Removes the root of the input_tree */
 bool tree_remove_root(tree *input_tree) {
   tree_root_free(input_tree->root);
   
@@ -255,7 +266,6 @@ bool tree_remove_root(tree *input_tree) {
   
   return true;
 }
-
 
 /* Delete a node from the search tree */
 bool tree_node_remove(tree *input_tree, char *key) {

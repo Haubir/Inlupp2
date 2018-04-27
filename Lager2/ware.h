@@ -21,6 +21,11 @@ typedef struct ware ware;
 /// \returns: an empty ware
 ware *ware_new(void);
 
+/// Free:s up the memory that was allocated for a ware
+///
+/// \returns: true if ware was successfully deleted
+bool ware_free(ware *to_delete);
+
 /// Sets a new key for the ware
 void ware_set_key(ware *input_ware, char *key);
 
@@ -32,6 +37,9 @@ void ware_set_amount(ware *input_ware, int amount);
 
 /// Increments the amount of the ware
 void ware_increment_amount(ware *input_ware, int amount);
+
+/// Decrements the amount of the ware
+void ware_decrement_amount(ware *input_ware, int amount);
 
 /* Sets a new list of shelves for the ware */
 //void ware_set_shelves(ware *input_ware, list *shelves);
@@ -51,10 +59,13 @@ int ware_get_price(ware *input_ware);
 /// \returns: the amount
 int ware_get_amount(ware *input_ware);
 
-/* Sets a new list of shelves for the ware */
+/* Returns the list of shelves for the ware */
 //list *ware_get_shelves(ware *input_ware);
 
 /// Shows the contents of the ware.
 void ware_show(ware *input_ware);
+
+/// Add information to the ware, such as name, price, amount and locations.
+void ware_enter_information(ware *input_ware);
 
 #endif /* ware_h */
