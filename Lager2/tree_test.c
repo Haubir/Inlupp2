@@ -23,6 +23,7 @@ tree *preset_tree() {
   
   for (int i = 0; i < 6; i++) { 
     node *new_node = node_new();
+    ware_set_key(node_get_ware(new_node), key_list[i]);
     node_set_key(new_node, key_list[i]);
     tree_node_add(new_tree, new_node);
   }

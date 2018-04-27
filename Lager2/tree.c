@@ -217,10 +217,13 @@ bool tree_node_add(tree *input_tree, node *to_insert) {
     }
   }
   else {
-    *(input_tree->root) = calloc(1, sizeof(node));
+    /* *(input_tree->root) = calloc(1, sizeof(node));
     node *root_node = *(input_tree->root);
     node_copy(root_node, to_insert);
-    free(to_insert);
+    free(to_insert); */
+    
+    *(input_tree->root) = to_insert;
+    
     input_tree->size++;
     input_tree->depth++;
     return true;
@@ -548,7 +551,7 @@ bool node_edit(node *input_node) {
 /// Shows information about a node
 void node_show(node *input_node) {
   if (input_node) {
-    printf("Namn: %s\n", input_node->key);
+    printf("Namn: %s\n", ware_get_key(input_node->ware));
     //printf("Description: %s\n", ware_get_description(input_node->ware));
     //printf("Price: %d\n", ware_get_price(input_node->ware));
     //printf("Amount: %d\n", ware_get_amount(input_node->ware));
