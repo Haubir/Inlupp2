@@ -103,7 +103,7 @@ void strip_string(char *buffer) {
   }
 }
 
-void int_entry(char *input_text, int result) {
+void int_entry(char *input_text, int *result) {
   char *int_string = string_new();
   string_entry(input_text, int_string);
   
@@ -111,7 +111,7 @@ void int_entry(char *input_text, int result) {
     string_entry("Please enter an integer.", int_string);
   }
   
-  result = string_to_int(int_string);
+  *result = string_to_int(int_string);
   free(int_string);
 }
 

@@ -159,9 +159,11 @@ void node_copy(node *destination, node *source) {
   char *dest_key = string_new();
   string_copy(dest_key, node_get_key(source));
   node_set_key(destination, dest_key);
-  // ware *dest_ware = ware_new();
-  // ware_copy(dest_ware, node_get_ware(source));
-  // node_set_ware(destination, dest_ware);
+  
+  ware *dest_ware = ware_new();
+  ware_copy(dest_ware, node_get_ware(source));
+  node_set_ware(destination, dest_ware);
+  
   set_left_node(destination, get_left_node(source));
   set_parent_node(destination, get_parent_node(source));
   set_right_node(destination, get_right_node(source));
@@ -194,7 +196,6 @@ bool node_free(node *to_delete) {
   to_delete->parent = NULL;
   to_delete->left = NULL;
   to_delete->right = NULL;
-  free(to_delete->key);
   free(to_delete);
   to_delete = NULL;
   
@@ -466,7 +467,6 @@ bool tree_node_edit(tree *input_tree) {
   else {    
     node *copy_of_edited = node_new();
     node_copy(copy_of_edited, to_edit);
-    // Fortsätt här. Nyckeln verkar inte lagras på rätt sätt i copy_of_edited. Måste fixas innan nästa steg!
     
     copy_of_edited->left = NULL;
     copy_of_edited->right = NULL;
@@ -500,13 +500,14 @@ bool node_edit(node *input_node) {
   }
   
   node_show(input_node);
-  string_entry("Svara med 1-4 för att välja ett av alternativen eller skriv \"avsluta\" för att avsluta och återvända till huvudmenyn.\n1: Redigera namn\n2: Redigera beskrivning\n3: Redigera pris\n4: Redigera hyllplats(er)", answer);
+  string_entry("Svara med 1-5 för att välja ett av alternativen eller skriv \"avsluta\" för att avsluta och återvända till huvudmenyn.\n1. Redigera namn\n2. Redigera beskrivning\n3. Redigera pris\n4. Redigera antal\n5. Redigera hyllplats(er)", answer);
   while ((string_compare(answer, "1") != 0) &&
          (string_compare(answer, "2") != 0) &&
          (string_compare(answer, "3") != 0) &&
          (string_compare(answer, "4") != 0) &&
+         (string_compare(answer, "5") != 0) &&
          (string_compare(answer, "avsluta") != 0)) {
-    string_entry("Svara med 1-4 för att välja ett av alternativen eller skriv \"avsluta\" för att avsluta och återvända till huvudmenyn.", answer);
+    string_entry("Svara med 1-5 för att välja ett av alternativen eller skriv \"avsluta\" för att avsluta och återvända till huvudmenyn.", answer);
     
     if (string_compare(answer, "avsluta") == 0) {
       string_entry("Är du säker på att du vill avsluta?\n(J/j) för ja, (N/n) för nej.", answer);
@@ -525,18 +526,19 @@ bool node_edit(node *input_node) {
       break;
       
     case 2:
-      //ware_description_edit(input_node->ware);
+      ware_edit_description(input_node->ware);
       break;
       
     case 3:
-      //ware_price_edit(input_node->ware);
+      ware_edit_price(input_node->ware);
       break;
       
-      /*    case 4:
-       ware_amount_edit(input_node->ware);
-       break;*/
-      
     case 4:
+      ware_edit_amount(input_node->ware);
+      break;
+      
+    case 5:
+      printf("To be implemented...\n");
       //ware_shelves_edit(input_node->ware);
       break;
       
@@ -552,44 +554,19 @@ bool node_edit(node *input_node) {
 void node_show(node *input_node) {
   if (input_node) {
     printf("Namn: %s\n", ware_get_key(input_node->ware));
-    //printf("Description: %s\n", ware_get_description(input_node->ware));
-    //printf("Price: %d\n", ware_get_price(input_node->ware));
-    //printf("Amount: %d\n", ware_get_amount(input_node->ware));
+    printf("Description: %s\n", ware_get_description(input_node->ware));
+    printf("Price: %d\n", ware_get_price(input_node->ware));
+    printf("Amount: %d\n", ware_get_amount(input_node->ware));
     //node_show_shelves_list(input_node);
+    printf("-----------------------------------\n");
   }
 }
 
+/* Edits the node's name */
 void node_name_edit(node *input_node) {
-  char *answer = string_new();
-  string_entry("Skriv ett nytt namn för varan:", answer);
-  
-  free(node_get_key(input_node));
-  node_set_key(input_node, NULL);
-  node_set_key(input_node, answer);
-
-  //ware_set_name(to_edit->ware, to_edit->key);
+  ware_edit_name(input_node->ware);
+  node_set_key(input_node, ware_get_key(input_node->ware));
 }
-
-/*
-/// Shows information about the shelves of a node's shelf-list
-
-void node_show_shelves_list(node *input_node) {
-  if (!ware_get_shelves_list(input_node->ware)) {
-    printf("Det finns ingen lista kaka, vad är de du försöker printa haa?\n");
-    return;
-  }
-  
-  printf("%s is in the following shelves: \n", input_node->key);
-  
-  list_node *iter = list_get_first(ware_get_shelves_list(input_node->ware));
-  
-  while(iter) {
-    void *iter_data = list_node_get_data(iter);
-    shelf_t *shelf_iter = (shelf_t *)iter_data;
-    printf("%s: %d pc\n", shelf_get_location(shelf_iter), shelf_get_quantity(shelf_iter));
-    iter = list_node_get_next(iter);
-  }
-} */
 
 /* OBS! Behövs kanske inte!! Finds the smallest subnode in a tree */
 node *find_smallest_node(node *start) {

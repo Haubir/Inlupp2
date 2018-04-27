@@ -187,9 +187,10 @@ bool tree_node_edit(tree *input_tree);
 /// Displays the input_node's contents
 void node_show(node *input_node);
 
-/// Edit the key of the input_node
+/// Edits the node's name
 void node_name_edit(node *input_node);
 
+/* OBS! Behövs nog inte. */
 /// Finds the smallest subnode in a tree
 ///
 /// \returns: the smallest node found

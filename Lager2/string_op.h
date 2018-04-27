@@ -43,6 +43,6 @@ void string_entry(char *input_text, char *result);
 void strip_string(char *buffer);
 
 /* Handles int inputs into the system. */
-void int_entry(char *input_text, int result);
+void int_entry(char *input_text, int *result);
 
 #endif /* string_op_h */
