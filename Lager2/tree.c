@@ -147,6 +147,12 @@ void set_parent_node(node *input_node, node *new_parent) {
 
 /* Copies the source tree into the destination tree */
 void tree_copy(tree *destination, tree *source) {
+  /*node *source_root = *(source->root);
+  node *dest_root = *(destination->root);
+  node_copy(dest_root, source_root);
+  
+  tree_copy_aux(dest_root, source_root);
+  */
   destination->root = source->root;
   destination->depth = source->depth;
   destination->size = source->size;
@@ -322,7 +328,7 @@ node *find_node_in_tree(char *find_key, tree *input_tree/*, node *dest_node*/) {
 
 /* Auxilliary recursive function for find_node_in_tree that goes through each node to find a node that matches the key */
 node *find_node_in_tree_aux(char *key, node *start_node) {
-  int comparison = strcmp(key, start_node->key);
+  int comparison = string_compare(key, start_node->key);
   
   if (comparison < 0) { // Betyder att key kommer före start_node->key i alfabetisk ordning
     if (start_node->left) {
@@ -554,9 +560,9 @@ bool node_edit(node *input_node) {
 void node_show(node *input_node) {
   if (input_node) {
     printf("Namn: %s\n", ware_get_key(input_node->ware));
-    printf("Description: %s\n", ware_get_description(input_node->ware));
-    printf("Price: %d\n", ware_get_price(input_node->ware));
-    printf("Amount: %d\n", ware_get_amount(input_node->ware));
+    printf("Beskrivning: %s\n", ware_get_description(input_node->ware));
+    printf("Pris: %d\n", ware_get_price(input_node->ware));
+    printf("Antal: %d\n", ware_get_amount(input_node->ware));
     //node_show_shelves_list(input_node);
     printf("-----------------------------------\n");
   }

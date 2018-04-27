@@ -11,7 +11,9 @@
 
 // Only for development purposes. Creates a new tree with 7 nodes. 
 tree *preset_tree() {
-  tree *new_tree = test_add_root("e");
+  char *root_name = string_new();
+  root_name = "e";
+  tree *new_tree = test_add_root(root_name);
   node **tree_root = tree_get_root(new_tree);
   node *root_node = *tree_root;
   
@@ -84,23 +86,6 @@ tree *test_add_root(char *ware_name) {
 void test_add_to_tree(tree *input_tree) {
   node *test_node = node_new();
   
-  /*char *ware_name = string_new();
-  char *ware_description = string_new();
-  int ware_price = 0;
-  int ware_amount = 0;
-  
-  string_entry("Vänligen skriv varans namn: ", ware_name);
-  string_entry("Beskriv varan, så tydligt som möjligt: ", ware_description);
-  int_entry("Vänligen skriv in varans pris: ", &ware_price);
-  int_entry("Ange hur många av varan som ska lagras: ", &ware_amount);
-  
-  strip_string(ware_name);
-  strip_string(ware_description);
-  
-  ware_set_key(node_get_ware(test_node), ware_name);
-  ware_set_description(node_get_ware(test_node), ware_description);
-  ware_set_price(node_get_ware(test_node), ware_price);
-  ware_set_amount(node_get_ware(test_node), ware_amount); */
   ware_enter_information(node_get_ware(test_node));
   node_set_key(test_node, ware_get_key(node_get_ware(test_node)));  
   
