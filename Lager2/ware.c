@@ -35,10 +35,10 @@ bool ware_free(ware *to_delete) {
   to_delete->price = 0;
   to_delete->amount = 0;
   
-  /*if (to_delete->shelves) {
+  if (to_delete->shelves) {
     shelves_free(to_delete->shelves);
     to_delete->shelves = NULL;
-  } */
+  }
   
   free(to_delete);
   to_delete = NULL;
@@ -66,8 +66,7 @@ void ware_copy(ware *destination, ware *source) {
   dest_amount = ware_get_amount(source);
   ware_set_amount(destination, dest_amount);
   
-  /*if (source->shelves) shelves_copy(destination->shelves, source->shelves);*/
-  
+  shelves_copy(destination->shelves, source->shelves);
 }
 
 /* Sets a new key for the ware */
@@ -101,9 +100,9 @@ void ware_decrement_amount(ware *input_ware, int amount) {
 }
 
 /* Sets a new list of shelves for the ware */
-/*void ware_set_shelves(ware *input_ware, list *shelves) {
+void ware_set_shelves(ware *input_ware, shelves_list *shelves) {
   input_ware->shelves = shelves;
- } */
+} 
 
 /* Returns the key of the ware */
 char *ware_get_key(ware *input_ware) {
@@ -126,9 +125,9 @@ int ware_get_amount(ware *input_ware) {
 }
 
 /* Returns the list of shelves for the ware */
-/*list *ware_get_shelves(ware *input_ware) {
+shelves_list *ware_get_shelves(ware *input_ware) {
   return input_ware->shelves;
- } */
+}
 
 /* Shows the contents of the ware. */
 void ware_show(ware *input_ware) {
@@ -228,7 +227,7 @@ void ware_edit_amount(ware *input_ware) {
   //ware_set_price(input_ware, answer);
 }
 
-/// Interface for incrementing the amount of the input_ware
+/* Interface for incrementing the amount of the input_ware */
 void ware_edit_increment_amount(ware *input_ware){
   int increment = 0;
   int_entry("Vänligen skriv in hur mycket du vill öka varans antal med: ", &increment);
@@ -236,7 +235,7 @@ void ware_edit_increment_amount(ware *input_ware){
   ware_increment_amount(input_ware, increment);
 }
 
-/// Interface for decrementing the amount of the input_ware
+/* Interface for decrementing the amount of the input_ware */
 void ware_edit_decrement_amount(ware *input_ware){
   int decrement = 0;
   int_entry("Vänligen skriv in hur mycket du vill minska varans antal med: ", &decrement);
@@ -244,7 +243,7 @@ void ware_edit_decrement_amount(ware *input_ware){
   ware_decrement_amount(input_ware, decrement);
 }
 
-/// Interface for setting a new amount for the input_ware
+/* Interface for setting a new amount for the input_ware */
 void ware_edit_new_amount(ware *input_ware){
   int new_amount = 0;
   int_entry("Vänligen skriv in ett nytt antal för varan: ", &new_amount);
@@ -252,7 +251,10 @@ void ware_edit_new_amount(ware *input_ware){
   ware_set_amount(input_ware, new_amount);
 }
 
-//void ware_edit_shelves(ware *input_node);
+/* Interface for editing the shelves where the input_ware is located */
+void ware_edit_shelves(ware *input_node) {
+  printf("To be implemented...\n");
+}
 
 
 

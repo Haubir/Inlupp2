@@ -25,6 +25,12 @@ typedef struct shelf shelf;
 /// \returns: an empty shelves_list struct
 shelves_list *shelves_new(void);
 
+/// Deletes the input_list and free:s the memory that it had allocated
+void shelves_free(shelves_list *input_list);
+
+/// Copies the source_list into the destination_list
+void shelves_copy(shelves_list *destination_list, shelves_list *source_list);
+
 /// Returns the first list_node of the input_list
 ///
 /// \returns: a list_node
@@ -62,6 +68,9 @@ list_node *list_node_new(void);
 /// Deletes the input_list_node and free:s the memory that it had allocated
 bool list_node_free(list_node *to_delete, char *flag);
 
+/// Copies the source_list into the destination_list
+void list_node_copy(list_node *destination, list_node *source);
+
 /// Returns the data of the input list_node
 ///
 /// \returns: a void pointer to the data
@@ -85,6 +94,9 @@ shelf *shelf_new(void);
 
 /// Deletes the input shelf and free:s the memory that it had allocated
 bool shelf_free(shelf *to_delete);
+
+/// Copies the source shelf into the destination shelf
+void shelf_copy(shelf *destination, shelf *source);
 
 /// Returns the location of the shelf
 ///
@@ -132,6 +144,11 @@ list_node *find_list_node_by_shelf_location(shelves_list *input_list, char *key)
 
 /// Removes the element in the input_list that has the same name as the input key
 bool shelves_list_remove_by_location(shelves_list *input_list, char *key);
+
+/// Finds a list_node in the input_list at the same index as the input index and returns it.
+///
+/// \returns: a list_node or NULL
+list_node *find_list_node_by_index(shelves_list *input_list, int index);
 
 /// Removes the element in the input_list that has the same index in the list as the input index
 bool shelves_list_remove_by_index(shelves_list *input_list, int index);

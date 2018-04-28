@@ -8,21 +8,17 @@
 
 #include "shelves_list.h"
 
-/// Define struct list in your .c file not here! (why?)
 struct shelves_list {
   list_node *first; /// Points to the first element of the list
   list_node *last; /// Points to the last element of the list
   int size;
 };
 
-/// The generic list_node which will hold a pointer to a list elements
 struct list_node {
   void *data;
   list_node *next;
-  //list_node *previous;
 };
 
-/// Define struct shelf in your .c file not here! (why?)
 struct shelf {
   char *location; /// Contains the location of the shelf
   int quantity;
@@ -36,6 +32,26 @@ shelves_list *shelves_new() {
   new_shelves->size = 0;
   
   return new_shelves;
+}
+
+/* Deletes the input_list and free:s the memory that it had allocated */
+void shelves_free(shelves_list *input_list) {
+  while (!shelves_list_is_empty(input_list)) shelves_list_top(input_list);
+  free(input_list);
+}
+
+/* Copies the source_list into the destination_list */
+void shelves_copy(shelves_list *destination_list, shelves_list *source_list) {
+  list_node *iter = source_list->first;
+  
+  while (iter) {
+    shelf *iter_shelf = (shelf *) iter->data;
+    shelf *new_shelf = shelf_new();
+    shelf_copy(new_shelf, iter_shelf);
+    
+    shelves_list_append(destination_list, new_shelf);
+    iter = iter->next;
+  }
 }
 
 /* Returns the first list_node of the input_list */
@@ -79,12 +95,11 @@ list_node *list_node_new() {
   
   new_list_node->data = NULL;
   new_list_node->next = NULL;
-  //new_list_node->previous = NULL;
   
   return new_list_node;
 }
 
-/// Deletes the input_list_node and free:s the memory that it had allocated
+/* Deletes the input_list_node and free:s the memory that it had allocated */
 bool list_node_free(list_node *to_delete, char *flag) {
   if (string_equals(flag, "shelf")) {
     shelf *shelf_to_delete = (shelf *) to_delete->data;
@@ -138,6 +153,15 @@ bool shelf_free(shelf *to_delete) {
   bool ret = to_delete == NULL;
   
   return ret;
+}
+
+/* Copies the source shelf into the destination shelf */
+void shelf_copy(shelf *destination, shelf *source) {
+  char *dest_location = string_new();
+  string_copy(dest_location, source->location);
+  
+  destination->location = dest_location;
+  destination->quantity = source->quantity;
 }
 
 /* Returns the location of the input_shelf */
@@ -199,8 +223,10 @@ void shelves_list_top(shelves_list *input_list) {
   if (shelves_list_is_empty(input_list)) return;
   
   list_node *to_delete = input_list->first;
-  list_node *new_first = to_delete->next;
-  input_list->first = new_first;
+  if (to_delete->next) {
+    list_node *new_first = to_delete->next;
+    input_list->first = new_first;
+  }
   
   char *flag = string_new();
   flag = "shelf";
@@ -216,10 +242,15 @@ void shelves_list_tail(shelves_list *input_list) {
   list_node *to_delete = input_list->last;
   list_node *new_last = input_list->first;
   
-  while (new_last->next->next != NULL) new_last = new_last->next;
-  input_list->last = new_last;
-  new_last->next = NULL;
-  
+  if (new_last == to_delete) { // There is only one element in the list
+    input_list->first = NULL;
+    input_list->last = NULL;
+  }
+  else {
+    while (new_last->next->next != NULL) new_last = new_last->next;
+    input_list->last = new_last;
+    new_last->next = NULL;
+  }
   char *flag = string_new();
   flag = "shelf";
   list_node_free(to_delete, flag);
@@ -248,32 +279,92 @@ list_node *find_list_node_by_shelf_location(shelves_list *input_list, char *key)
 bool shelves_list_remove_by_location(shelves_list *input_list, char *key) {
   if (shelves_list_is_empty(input_list)) return false;
   
-  if (find_list_node_by_shelf_location(input_list, key) == NULL) return false; // Shelf was not found
+  list_node *match = find_list_node_by_shelf_location(input_list, key);
+  if (match == NULL) return false; // Shelf was not found
   bool to_delete_found = false;
   list_node *iter = input_list->first;
   
-  while (iter->next) {
-    list_node *iter_next = iter->next;
-    shelf *next_shelf = (shelf *) iter_next->data;
-    
-    if (string_equals(key, next_shelf->location)) {
-      to_delete_found = true;
-      iter->next = iter_next->next;
-      if (iter->next == NULL) input_list->last = iter;
+  if (match == input_list->first) {
+    shelves_list_top(input_list);
+  }
+  else if (match == input_list->last) {
+    shelves_list_tail(input_list);
+  }
+  else {
+    while (iter->next) {
+      list_node *iter_next = iter->next;
+      shelf *next_shelf = (shelf *) iter_next->data;
       
-      char *flag = string_new();
-      flag = "shelf";
-      list_node_free(iter_next, flag);
-      
-      input_list->size--;
-      break;
+      if (string_equals(key, next_shelf->location)) {
+        to_delete_found = true;
+        iter->next = iter_next->next;
+        if (iter->next == NULL) input_list->last = iter;
+        
+        char *flag = string_new();
+        flag = "shelf";
+        list_node_free(iter_next, flag);
+        
+        input_list->size--;
+        break;
+      }
+      iter = iter->next;
     }
-    iter = iter->next;
+  }
+  return to_delete_found;
+}
+
+/* Finds a list_node in the input_list at the same index as the input index and returns it. */
+list_node *find_list_node_by_index(shelves_list *input_list, int index) {
+  if (index >= input_list->size) {
+    printf("find_list_node_by_index(): Index was too large...\n");
+    return NULL;
+  }
+  list_node *iter = input_list->first;
+  for (int i = 0; i < index; i++) iter = iter->next;
+  
+  return iter;
+}
+
+/* Removes the element in the input_list that has the same index in the list as the input index */
+bool shelves_list_remove_by_index(shelves_list *input_list, int index) {
+  if (shelves_list_is_empty(input_list)) return false;
+  
+  bool to_delete_found = false;
+  
+  list_node *to_delete = find_list_node_by_index(input_list, index);
+  if (to_delete) {
+    if (to_delete == input_list->first) {
+      shelves_list_top(input_list);
+      return true;
+    }
+    if (to_delete == input_list->last) {
+      shelves_list_tail(input_list);
+      return true;
+    }
+    to_delete_found = true;
+    list_node *iter = input_list->first;
+    shelf *to_delete_shelf = (shelf *) to_delete->data;
+    char *to_delete_key = to_delete_shelf->location;
+    
+    while (iter->next) {
+      list_node *iter_next = iter->next;
+      shelf *next_shelf = (shelf *) iter_next->data;
+      
+      if (string_equals(to_delete_key, next_shelf->location)) {
+        to_delete_found = true;
+        iter->next = iter_next->next;
+        if (iter->next == NULL) input_list->last = iter;
+        
+        char *flag = string_new();
+        flag = "shelf";
+        list_node_free(iter_next, flag);
+        
+        input_list->size--;
+        break;
+      }
+      iter = iter->next;
+    }
   }
   
   return to_delete_found;
 }
-
-/* Removes the element in the input_list that has the same index in the list as the input index */
-bool shelves_list_remove_by_index(shelves_list *input_list, int index);
-
