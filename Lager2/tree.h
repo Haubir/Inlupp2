@@ -152,15 +152,25 @@ bool tree_root_free(node **input_root);
 /// \returns: true if node was successfully deleted
 bool node_free(node *to_delete);
 
-/// Searches through the tree to find a node that matches the input key. If a node is found, dest_node will point to it when the function is done.
+/// Searches through the tree to find a node that matches the input key. If a node is found, it is returned. Eitherwise NULL is returned.
 ///
-/// \returns: true if node was found, eitherwise false.
-node *find_node_in_tree(char *find_key, tree *tree_root/*, node *dest_node*/);
+/// \returns: a node or NULL
+node *find_node_in_tree(char *key, tree *tree_root);
 
-/// Auxilliary recursive function for find_node_in_tree that goes through each node to find a node that matches the key
+/// Auxilliary recursive function for find_node_in_tree that goes through each node to find a node that matches the key. If a node is found, it is returned. Eitherwise NULL is returned.
 ///
-/// \returns: the node if it is found, eitherwise NULL.
+/// \returns: a node or NULL
 node *find_node_in_tree_aux(char *key, node *root_node);
+
+/// Searches through the tree to find a shelf that matches the input key.
+///
+/// \returns: true if a shelf was found, else false
+bool find_shelf_in_tree(char *find_key, tree *tree_root/*, node *dest_node*/);
+
+/// Auxilliary recursive function for find_shelf_in_tree that goes through each node to find a shelf that matches the key
+///
+/// \returns: true if a shelf was found, else false
+bool find_shelf_in_tree_aux(char *key, node *root_node);
 
 /// Handles the rebalancing of the tree when the node that is to be deleted is the root node of the tree.
 void tree_rebalance_root_shift(tree *input_tree, node *replacement);

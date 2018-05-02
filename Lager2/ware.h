@@ -76,6 +76,9 @@ void ware_show(ware *input_ware);
 /// Add information to the ware, such as name, price, amount and locations.
 void ware_enter_information(ware *input_ware);
 
+/// Add shelf locations for the ware.
+void ware_enter_shelves(ware *input_ware, char *shelf_location);
+
 /// Edit the key of the input_ware
 void ware_edit_name(ware *input_ware);
 

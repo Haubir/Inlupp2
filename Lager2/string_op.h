@@ -48,4 +48,7 @@ void strip_string(char *buffer);
 /* Handles int inputs into the system. */
 void int_entry(char *input_text, int *result);
 
+/* Checks if the input_text follows the rules for shelf names. */
+bool is_shelf(char *input_text);
+
 #endif /* string_op_h */

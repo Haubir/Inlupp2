@@ -60,20 +60,20 @@ tree *preset_tree() {
 
 // Only for development purposes. Tests the ability to create a new tree with a root.
 tree *test_add_root(char *ware_name) {
-  tree *test_tree = tree_new();
-  node *test_node = node_new();
+  tree *new_tree = tree_new();
+  node *new_node = node_new();
   
   if (ware_name == NULL) {
     ware_name = string_new();
     string_entry("Please type a name for the new ware: ", ware_name);
     strip_string(ware_name);
   }
-  ware_set_key(node_get_ware(test_node), ware_name);
-  node_set_key(test_node, ware_name);
+  ware_set_key(node_get_ware(new_node), ware_name);
+  node_set_key(new_node, ware_name);
   
-  if (tree_node_add(test_tree, test_node)) {
+  if (tree_node_add(new_tree, new_node)) {
     printf("A node was successfully added to the tree!\n");
-    return test_tree;
+    return new_tree;
   }
   else {
     printf("It was not possible to add a node to the test tree...\n");
@@ -84,17 +84,30 @@ tree *test_add_root(char *ware_name) {
 
 // Only for development purposes. Tests the ability to add nodes to a tree.
 void test_add_to_tree(tree *input_tree) {
-  node *test_node = node_new();
+  node *new_node = node_new();
   
-  ware_enter_information(node_get_ware(test_node));
-  node_set_key(test_node, ware_get_key(node_get_ware(test_node)));  
+  ware_enter_information(node_get_ware(new_node));
   
-  if (tree_node_add(input_tree, test_node)) {
+  char *shelf_location = string_new();
+  
+  while (!is_shelf(shelf_location) && find_shelf_in_tree(shelf_location, input_tree)) {
+    string_entry("Ange den hyllplats som du vill placera varan på: ", shelf_location);  
+  
+    if (find_shelf_in_tree(shelf_location, input_tree)) {
+      printf("%s är upptagen, vänligen skriv in en annan hyllplats.\n", shelf_location);
+    }
+    else { 
+      ware *new_ware = node_get_ware(new_node);
+      ware_enter_shelves(new_ware, shelf_location);
+    }
+  }
+  node_set_key(new_node, ware_get_key(node_get_ware(new_node)));  
+  
+  if (tree_node_add(input_tree, new_node)) {
     printf("A node was successfully added to the tree!\n");
   }
   else {
     printf("It was not possible to add a node to the test tree...\n");
-    //free(ware_name);
   } 
 }
 

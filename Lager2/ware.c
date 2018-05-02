@@ -132,10 +132,11 @@ shelves_list *ware_get_shelves(ware *input_ware) {
 /* Shows the contents of the ware. */
 void ware_show(ware *input_ware) {
   printf("Namn: %s\n", input_ware->key);
+  printf("Beskrivning: %s\n", input_ware->description);
   printf("Pris: %d\n", input_ware->price);
-  printf("Namn: %d\n", input_ware->amount);
-  /*printf("Finns på följande hyllplatser:\n");
-  shelves_show(input_ware->shelves);*/
+  printf("Antal: %d\n", input_ware->amount);
+  printf("%s finns lagrat på följande platser: \n\n", input_ware->key);
+  shelves_show(input_ware->shelves, "shelf");
 }
 
 /* Add information to the ware, such as name, price, amount and locations. */
@@ -144,6 +145,7 @@ void ware_enter_information(ware *input_ware) {
   char *new_description = string_new();
   int new_price = 0;
   int insert_amount = 0;
+  
   
   string_entry("Skriv ett namn för varan: ", new_key);
   string_entry("Beskriv varan, så tydligt som möjligt: ", new_description);
@@ -156,6 +158,17 @@ void ware_enter_information(ware *input_ware) {
   ware_set_description(input_ware, new_description);
   ware_set_price(input_ware, new_price);
   ware_increment_amount(input_ware, insert_amount);
+}
+
+/* Add shelf locations for the ware. */
+void ware_enter_shelves(ware *input_ware, char *shelf_location) {
+  shelves_list *new_shelves = input_ware->shelves;
+  int shelf_quantity = input_ware->amount;
+  shelf *new_shelf = shelf_new();
+  shelf_set_location(new_shelf, shelf_location);
+  shelf_set_quantity(new_shelf, shelf_quantity);
+  
+  shelves_list_prepend(new_shelves, new_shelf);
 }
 
 /* Edit the key of the input_ware */

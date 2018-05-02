@@ -351,6 +351,38 @@ node *find_node_in_tree_aux(char *key, node *start_node) {
   }
 }
 
+/* Searches through the tree to find a node that matches the input key. If a node is found, dest_node will point to it when the function is done. */
+bool find_shelf_in_tree(char *key, tree *input_tree/*, node *dest_node*/) {
+  node **root_pointer = tree_get_root(input_tree);
+  node *root_node = *root_pointer;
+  if (!root_node) {
+    return false;
+  }
+  
+  if (!node_has_children(root_node)) {
+    ware *root_ware = root_node->ware;
+    shelves_list *root_shelves = ware_get_shelves(root_ware);
+    return shelf_already_exists(root_shelves, key);
+  }
+  
+  return find_shelf_in_tree_aux(key, root_node);
+}
+
+/* Auxilliary recursive function for find_shelf_in_tree that goes through each node to find a shelf that matches the key */
+bool find_shelf_in_tree_aux(char *key, node *iter) {
+  ware *iter_ware = iter->ware;
+  shelves_list *iter_shelves = ware_get_shelves(iter_ware);
+  
+  if (shelf_already_exists(iter_shelves, key)) return true;
+  
+  
+  if (iter->left) find_shelf_in_tree_aux(key, iter->left);
+  
+  if (iter->right) find_shelf_in_tree_aux(key, iter->right);
+  
+  return false;
+}
+
 /* Handles the rebalancing of the tree when the node that is to be deleted is the root node of the tree. */
 void tree_rebalance_root_shift(tree *input_tree, node *replacement) {
   node **tree_root = input_tree->root;
@@ -559,11 +591,7 @@ bool node_edit(node *input_node) {
 /// Shows information about a node
 void node_show(node *input_node) {
   if (input_node) {
-    printf("Namn: %s\n", ware_get_key(input_node->ware));
-    printf("Beskrivning: %s\n", ware_get_description(input_node->ware));
-    printf("Pris: %d\n", ware_get_price(input_node->ware));
-    printf("Antal: %d\n", ware_get_amount(input_node->ware));
-    //node_show_shelves_list(input_node);
+    ware_show(input_node->ware);
     printf("-----------------------------------\n");
   }
 }

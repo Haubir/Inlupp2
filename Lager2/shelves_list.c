@@ -135,6 +135,17 @@ void list_node_set_next(list_node *input_list_node, list_node *next) {
   input_list_node->next = next;
 }
 
+/* Shows the content of the input_list_node. */
+void list_node_show(list_node *input_list_node, char *flag) {
+  if (input_list_node->data == NULL) {
+    printf("list_node_show(): The node has no data....\n");
+  }
+  if (string_equals(flag, "shelf")) {
+    shelf *input_shelf = (shelf *) input_list_node->data;
+    shelf_show(input_shelf);
+  }
+}
+
 /* Allocates memory for a shelf struct and returns an empty struct */
 shelf *shelf_new() {
   shelf *new_shelf = calloc(1, sizeof(shelf));
@@ -192,6 +203,16 @@ void shelf_increment_quantity(shelf *input_shelf, int increment) {
 /* Decrements the quantity of the input_shelf */
 void shelf_decrement_quantity(shelf *input_shelf, int decrement) {
   input_shelf->quantity -= decrement;
+}
+
+/// Shows the content of the input_shelf.
+void shelf_show(shelf *input_shelf) {
+  if (input_shelf == NULL) {
+    printf("shelf_show(): The shelf is NULL...\n");
+    return;
+  }
+  printf("%s ", input_shelf->location);
+  printf("(%d stycken)", input_shelf->quantity);
 }
 
 /* Inserts an element to the front of the input_list */
@@ -367,4 +388,22 @@ bool shelves_list_remove_by_index(shelves_list *input_list, int index) {
   }
   
   return to_delete_found;
+}
+
+/* Shows the contents of the shelves_list. */
+void shelves_show(shelves_list *input_list, char *flag) {
+  if (input_list->size == 0) {
+    printf("shelves_show(): There are no shelves...\n");
+    return;
+  }
+  
+  list_node *iter = input_list->first;
+  int count = 0;
+  while (iter) {
+    printf("%d. ", count);
+    list_node_show(iter, flag);
+    printf("\n");
+    iter = iter->next;
+    count++;
+  }
 }

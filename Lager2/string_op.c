@@ -119,6 +119,45 @@ void int_entry(char *input_text, int *result) {
   free(int_string);
 }
 
+void shelf_entry(char *input_text, char *result) {
+  size_t buffer_len = 1024;
+  char *buffer = string_new();
+  
+  printf("%s\n", input_text);
+  getline(&buffer, &buffer_len, stdin);
+  while(buffer[0] == '\n'){
+    printf("Please enter something you ungrateful piece of shit scouser\n");
+    getline(&buffer, &buffer_len, stdin);
+  }
+  strip_string(buffer);
+  strcpy(result, buffer);
+  free(buffer);
+}
+
+bool is_shelf(char *input_text){
+
+  /// If key doesn't consist of three characters, it is not a shelfname according to the standard format.
+  if (string_length(input_text) != 3) {
+    return false;
+  }
+  
+  // If key does consist of three characters but doesn't start with an alphabetical letter, it is not a shelfname according to the standard format.
+  if (!isalpha(input_text[0])) {
+    return false;
+  }
+  
+  /// If key does consist of three characters with the first being an alphabetical letter, the following two characters must both be valid digits. If not, it is not a shelfname according to the standard format.
+  for (int i = 1; input_text[i] != '\0'; i++) {
+    if (!isdigit(input_text[i])) {
+      return false;
+    }
+  }
+  
+  /// If the function reaches this stage, key is a shelfname according to the standard format!
+  return true;
+
+}
+
 char *int_to_string(int to_convert) {
   char *to_return = NULL;
   return to_return;

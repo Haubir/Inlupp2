@@ -87,6 +87,9 @@ void list_node_set_data(list_node *input_list_node, void *data);
 /// Sets the next pointer of the input_list_node to the input next list_node
 void list_node_set_next(list_node *input_list_node, list_node *next);
 
+/// Shows the content of the input_list_node.
+void list_node_show(list_node *input_list_node, char *flag);
+
 /// Allocates memory for a shelf struct and returns an empty struct
 /// 
 /// \returns: an empty shelf
@@ -120,6 +123,9 @@ void shelf_increment_quantity(shelf *input_shelf, int increment);
 /// Decrements the quantity of the input_shelf
 void shelf_decrement_quantity(shelf *input_shelf, int decrement);
 
+/// Shows the content of the input_shelf.
+void shelf_show(shelf *input_shelf);
+
 /// Inserts an element to the front of the input_list
 void shelves_list_prepend(shelves_list *input_list, void *to_insert);
 
@@ -152,5 +158,8 @@ list_node *find_list_node_by_index(shelves_list *input_list, int index);
 
 /// Removes the element in the input_list that has the same index in the list as the input index
 bool shelves_list_remove_by_index(shelves_list *input_list, int index);
+
+/// Shows the contents of the shelves_list.
+void shelves_show(shelves_list *input_list, char *flag);
 
 #endif /* shelves_list_h */
