@@ -74,10 +74,13 @@ shelves_list *ware_get_shelves(ware *input_ware);
 void ware_show(ware *input_ware);
 
 /// Add information to the ware, such as name, price, amount and locations.
-void ware_enter_information(ware *input_ware);
+void ware_enter_information(ware *input_ware, char *new_key);
 
 /// Add shelf locations for the ware.
 void ware_enter_shelves(ware *input_ware, char *shelf_location);
+
+/// Increments the amount of the ware by adding amounts of it to a new shelf.
+void ware_increment_shelves(ware *input_ware, char *shelf_location, int increment);
 
 /// Edit the key of the input_ware
 void ware_edit_name(ware *input_ware);

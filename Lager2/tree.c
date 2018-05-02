@@ -219,7 +219,6 @@ bool tree_node_add(tree *input_tree, node *to_insert) {
       return true;
     }
     else {
-      printf("Error: Det finns redan en vara med detta namn. Vänligen välj ett annat namn. \n");
       return false;
     }
   }
@@ -318,7 +317,7 @@ bool tree_node_remove(tree *input_tree, char *key) {
 /* Searches through the tree to find a node that matches the input key. If a node is found, dest_node will point to it when the function is done. */
 node *find_node_in_tree(char *find_key, tree *input_tree/*, node *dest_node*/) {
   
-  if (*(input_tree->root) == NULL) return false;
+  if (*(input_tree->root) == NULL) return NULL;
   
   node **root_node = input_tree->root;
   node *test = find_node_in_tree_aux(find_key, *root_node);

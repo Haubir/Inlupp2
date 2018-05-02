@@ -84,31 +84,64 @@ tree *test_add_root(char *ware_name) {
 
 // Only for development purposes. Tests the ability to add nodes to a tree.
 void test_add_to_tree(tree *input_tree) {
-  node *new_node = node_new();
+  char *new_key = string_new();
+  string_entry("Skriv ett namn för varan: ", new_key);
   
-  ware_enter_information(node_get_ware(new_node));
-  
-  char *shelf_location = string_new();
-  
-  while (!is_shelf(shelf_location) && find_shelf_in_tree(shelf_location, input_tree)) {
-    string_entry("Ange den hyllplats som du vill placera varan på: ", shelf_location);  
-  
-    if (find_shelf_in_tree(shelf_location, input_tree)) {
-      printf("%s är upptagen, vänligen skriv in en annan hyllplats.\n", shelf_location);
-    }
-    else { 
-      ware *new_ware = node_get_ware(new_node);
-      ware_enter_shelves(new_ware, shelf_location);
-    }
-  }
-  node_set_key(new_node, ware_get_key(node_get_ware(new_node)));  
-  
-  if (tree_node_add(input_tree, new_node)) {
-    printf("A node was successfully added to the tree!\n");
+  if (find_node_in_tree(new_key, input_tree)) {
+    node *existing_node = find_node_in_tree(new_key, input_tree);
+    printf("%s finns redan i databasen.\n", new_key);
+    char *answer = string_new();
+    string_entry("Vill du lägga till fler av varan?", answer);
+    if (string_equals(answer, "ja")) test_increment_shelves(input_tree, existing_node);
+    free(answer);
   }
   else {
-    printf("It was not possible to add a node to the test tree...\n");
-  } 
+    node *new_node = node_new();
+    ware_enter_information(node_get_ware(new_node), new_key);
+    
+    char *shelf_location = string_new();
+    
+    while (!test_add_shelves(input_tree, shelf_location));
+    
+    ware *new_ware = node_get_ware(new_node);
+    ware_enter_shelves(new_ware, shelf_location);
+    
+    node_set_key(new_node, ware_get_key(node_get_ware(new_node)));  
+    
+    if (tree_node_add(input_tree, new_node)) {
+      printf("A node was successfully added to the tree!\n");
+    }
+    else {
+      printf("It was not possible to add a node to the tree.....\n");
+    }
+  }
+}
+
+void test_increment_shelves(tree *input_tree, node *input_node) {
+  char *shelf_location = string_new();
+  int increment = 0;
+  int_entry("Hur många styck vill du lägga till?", &increment);
+  while (!test_add_shelves(input_tree, shelf_location));
+  
+  ware *new_ware = node_get_ware(input_node);
+  ware_increment_shelves(new_ware, shelf_location, increment);
+}
+
+// Checks if the shelf_location follows the correct naming format for shelf locations, and also if the given shelf location is already occupied.
+bool test_add_shelves(tree *input_tree, char *shelf_location) {
+  string_entry("Ange den hyllplats som du vill placera varan på: ", shelf_location);  
+  
+  if (!is_shelf(shelf_location)) {
+    printf("'%s' följer inte rätt format för hyllplatsernas namn. Vänligen ange enligt följande format:\n<Bokstav><Siffra><Siffra>\nT.ex: A01, B23 etc.\n", shelf_location);
+    return false;
+  }
+  
+  if (find_shelf_in_tree(shelf_location, input_tree)) {
+    printf("%s är upptagen, vänligen skriv in en annan hyllplats.\n", shelf_location);
+    return false;
+  }
+  
+  return true;
 }
 
 // Only for development purposes. Tests the ability to remove a node from a tree.

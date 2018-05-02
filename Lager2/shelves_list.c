@@ -398,7 +398,7 @@ void shelves_show(shelves_list *input_list, char *flag) {
   }
   
   list_node *iter = input_list->first;
-  int count = 0;
+  int count = 1;
   while (iter) {
     printf("%d. ", count);
     list_node_show(iter, flag);
