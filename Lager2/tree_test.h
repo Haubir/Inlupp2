@@ -29,6 +29,8 @@ bool test_add_shelves(tree *input_tree, char *shelf_location);
 
 void test_remove_node(tree *input_tree);
 
+bool test_remove_shelves(node *input_node, int shelves_size);
+
 void test_edit_node(tree *input_tree);
 
 #endif /* tree_test_h */

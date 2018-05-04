@@ -109,7 +109,7 @@ bool list_node_free(list_node *to_delete, char *flag) {
   to_delete->next = NULL;
   free(to_delete);
   to_delete = NULL;
-  free(flag);
+  
   bool ret = to_delete == NULL;
   
   return ret;
@@ -252,7 +252,7 @@ void shelves_list_top(shelves_list *input_list) {
   char *flag = string_new();
   flag = "shelf";
   list_node_free(to_delete, flag);
-  
+  // free(flag); TODO kan inte free:as av nån skum anledning. Titta på detta senare
   input_list->size--;
 }
 

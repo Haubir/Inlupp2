@@ -19,8 +19,8 @@ void string_copy(char *destination, char *source) {
 }
 
 int string_compare(char *first, char *second) {
-  char *first_lowercase = calloc(string_length(first), sizeof(char));
-  char *second_lowercase = calloc(string_length(second), sizeof(char));
+  char *first_lowercase = string_new();
+  char *second_lowercase = string_new();
   
   string_to_lower(first, first_lowercase);
   string_to_lower(second, second_lowercase);
@@ -49,7 +49,7 @@ bool string_equals(char *first, char *second) {
 }
 
 void string_to_lower(char *string, char *after) {
-  strncpy(after, string, (size_t) string_length(string));
+  strncpy(after, string, sizeof(char));
   for (int i = 0; string[i] != '\0'; i++) {
     after[i] = tolower(string[i]);
   }

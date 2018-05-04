@@ -146,9 +146,25 @@ bool test_add_shelves(tree *input_tree, char *shelf_location) {
 
 // Only for development purposes. Tests the ability to remove a node from a tree.
 void test_remove_node(tree *input_tree) {
+  node *root_node = *(tree_get_root(input_tree));
+  
+  if (root_node == NULL) {
+    printf("Databasen är tom, det finns inget att ta bort!\n");
+    return;
+  }
+  
   char *node_name = string_new();
-  string_entry("Please type the name of the node that you wish to delete: ", node_name);
+  string_entry("Vilken vara vill du ta bort?", node_name);
   strip_string(node_name);
+  
+  node *to_delete = find_node_in_tree(node_name, input_tree);
+  node_show(to_delete);
+  
+  ware *ware_to_delete = node_get_ware(to_delete);
+  shelves_list *shelves_to_delete = ware_get_shelves(ware_to_delete);
+  int shelves_size = shelves_list_get_size(shelves_to_delete);
+  
+  if (shelves_size > 1) while (!test_remove_shelves(to_delete, shelves_size));
   
   if (tree_node_remove(input_tree, node_name)) {
     printf("A node was successfully removed from the tree!\n");
@@ -158,6 +174,18 @@ void test_remove_node(tree *input_tree) {
   }
   
   free(node_name);
+}
+
+bool test_remove_shelves(node *input_node, int shelves_size) {
+  int choice = 0;
+  int_entry("Vilken hyllplats skall tas bort ifrån?", &choice);  
+  
+  if (!(1 < choice < shelves_size)) {
+    printf("Vänligen skriv en siffra mellan 1-%d för att välja en av hyllplatserna.\n", shelves_size);
+    return false;
+  } 
+  
+  return true;
 }
 
 // Only for development purposes. Tests the ability to edit a node in the tree, and find a new position for it in the tree if necessary.
