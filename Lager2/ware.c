@@ -143,16 +143,13 @@ void ware_show(ware *input_ware) {
 void ware_enter_information(ware *input_ware, char *new_key) {
   char *new_description = string_new();
   int new_price = 0;
-  int insert_amount = 0;
   
   string_entry("Beskriv varan, så tydligt som möjligt: ", new_description);
   int_entry("Skriv in varans pris: ", &new_price);
-  int_entry("Ange hur många av varan som ska lagras: ", &insert_amount);
   
   ware_set_key(input_ware, new_key);
   ware_set_description(input_ware, new_description);
   ware_set_price(input_ware, new_price);
-  ware_increment_amount(input_ware, insert_amount);
 }
 
 /* Add shelf locations for the ware. */
@@ -268,30 +265,7 @@ void ware_edit_new_amount(ware *input_ware){
 }
 
 /* Interface for editing the shelves where the input_ware is located */
-void ware_edit_shelves(ware *input_node) {
-  printf("To be implemented...\n");
+void ware_edit_shelves(ware *input_ware) {
+  shelves_show(input_ware->shelves, "shelf");
+  
 }
-
-
-
-
-/*
- /// Shows information about the shelves of a node's shelf-list
- 
- void node_show_shelves_list(node *input_node) {
- if (!ware_get_shelves_list(input_node->ware)) {
- printf("Det finns ingen lista kaka, vad är de du försöker printa haa?\n");
- return;
- }
- 
- printf("%s is in the following shelves: \n", input_node->key);
- 
- list_node *iter = list_get_first(ware_get_shelves_list(input_node->ware));
- 
- while(iter) {
- void *iter_data = list_node_get_data(iter);
- shelf_t *shelf_iter = (shelf_t *)iter_data;
- printf("%s: %d pc\n", shelf_get_location(shelf_iter), shelf_get_quantity(shelf_iter));
- iter = list_node_get_next(iter);
- }
- } */

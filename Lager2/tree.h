@@ -200,11 +200,4 @@ void node_show(node *input_node);
 /// Edits the node's name
 void node_name_edit(node *input_node);
 
-/* OBS! Behövs nog inte. */
-/// Finds the smallest subnode in a tree
-///
-/// \returns: the smallest node found
-node *find_smallest_node(node *start);
-
-
 #endif /* tree_h */

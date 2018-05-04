@@ -597,18 +597,3 @@ void node_name_edit(node *input_node) {
   ware_edit_name(input_node->ware);
   node_set_key(input_node, ware_get_key(input_node->ware));
 }
-
-/* OBS! Behövs kanske inte!! Finds the smallest subnode in a tree */
-node *find_smallest_node(node *start) {
-  node *iter = start;
-  
-  if (iter->left) {
-    iter = iter->left;
-    while (iter->right) {
-      iter = iter->right;
-    }
-  }
-  
-  return iter;
-}
-

@@ -104,6 +104,6 @@ void ware_edit_decrement_amount(ware *input_ware);
 void ware_edit_new_amount(ware *input_ware);
 
 /* Interface for editing the shelves where the input_ware is located */
-void ware_edit_shelves(ware *input_node);
+void ware_edit_shelves(ware *input_ware);
 
 #endif /* ware_h */

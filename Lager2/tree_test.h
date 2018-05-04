@@ -20,12 +20,12 @@ tree *test_add_root(char *key);
 
 void test_add_to_tree(tree *input_tree);
 
-void test_increment_shelves(tree *input_tree, node *input_node);
+void test_increment_shelves(node *input_node, char *shelf_location, char *flag);
 
 /// Checks if the shelf_location follows the correct naming format for shelf locations, and also if the given shelf location is already occupied.
 ///
 /// \returns: true if the shelf is of valid naming format and not occupied, else false
-bool test_add_shelves(tree *input_tree, char *shelf_location);
+bool test_add_shelves(tree *input_tree, node *input_node, char *shelf_location, char *flag);
 
 void test_remove_node(tree *input_tree);
 

@@ -86,6 +86,7 @@ tree *test_add_root(char *ware_name) {
 void test_add_to_tree(tree *input_tree) {
   char *new_key = string_new();
   string_entry("Skriv ett namn för varan: ", new_key);
+  char *shelf_location = string_new();
   
   if (find_node_in_tree(new_key, input_tree)) {
     node *existing_node = find_node_in_tree(new_key, input_tree);
@@ -94,10 +95,11 @@ void test_add_to_tree(tree *input_tree) {
     while (true) {
       string_entry("Vill du lägga till fler av varan?", answer);
       if (string_equals(answer, "ja")) {
-        test_increment_shelves(input_tree, existing_node);
+        while (!test_add_shelves(input_tree, existing_node, shelf_location, "existing"));
         break;
       }
       if (string_equals(answer, "nej")) {
+        free(shelf_location);
         break;
       }
     }
@@ -107,12 +109,7 @@ void test_add_to_tree(tree *input_tree) {
     node *new_node = node_new();
     ware_enter_information(node_get_ware(new_node), new_key);
     
-    char *shelf_location = string_new();
-    
-    while (!test_add_shelves(input_tree, shelf_location));
-    
-    ware *new_ware = node_get_ware(new_node);
-    ware_enter_shelves(new_ware, shelf_location);
+    while (!test_add_shelves(input_tree, new_node, shelf_location, "new"));
     
     node_set_key(new_node, ware_get_key(node_get_ware(new_node)));  
     
@@ -125,19 +122,22 @@ void test_add_to_tree(tree *input_tree) {
   }
 }
 
-void test_increment_shelves(tree *input_tree, node *input_node) {
-  char *shelf_location = string_new();
+void test_increment_shelves(node *input_node, char *shelf_location, char *flag) {
   int increment = 0;
   int_entry("Hur många styck vill du lägga till?", &increment);
-  while (!test_add_shelves(input_tree, shelf_location));
-  
   ware *input_ware = node_get_ware(input_node);
-  ware_increment_shelves(input_ware, shelf_location, increment);
+  if (string_equals(flag, "new")) ware_increment_shelves(input_ware, shelf_location, increment);
+  if (string_equals(flag, "existing")) {
+    shelves_list *input_list = ware_get_shelves(input_ware);
+    list_node *node_to_increment = find_list_node_by_shelf_location(input_list, shelf_location);
+    shelf *to_increment = (shelf *) list_node_get_data(node_to_increment);
+    shelf_increment_quantity(to_increment, increment);
+  }
   ware_increment_amount(input_ware, increment);
 }
 
 // Checks if the shelf_location follows the correct naming format for shelf locations, and also if the given shelf location is already occupied.
-bool test_add_shelves(tree *input_tree, char *shelf_location) {
+bool test_add_shelves(tree *input_tree, node *input_node, char *shelf_location, char *flag) {
   string_entry("Ange den hyllplats som du vill placera varan på: ", shelf_location);  
   
   if (!is_shelf(shelf_location)) {
@@ -146,8 +146,30 @@ bool test_add_shelves(tree *input_tree, char *shelf_location) {
   }
   
   if (find_shelf_in_tree(shelf_location, input_tree)) {
-    printf("%s är upptagen, vänligen skriv in en annan hyllplats.\n", shelf_location);
-    return false;
+    if (string_equals(flag, "new")) {
+      printf("%s är upptagen, vänligen skriv in en annan hyllplats.\n", shelf_location);
+      return false;
+    }
+    
+    if (string_equals(flag, "existing")) {
+      char *answer = string_new();
+      printf("Varan finns redan på denna hylla. ");
+      while (!(string_equals(answer, "ja") || string_equals(answer, "nej"))) {
+        string_entry("Vill du utöka antalet på denna hylla?", answer);
+        if (string_equals(answer, "ja")) {
+          test_increment_shelves(input_node, shelf_location, "existing");
+          return true;
+        }
+        if (string_equals(answer, "nej")) {
+          free(shelf_location);
+          return true;
+        }
+        printf("Vänligen svara ja eller nej.\n");
+      }
+    }
+  }
+  else {
+    test_increment_shelves(input_node, shelf_location, "new");
   }
   
   return true;
