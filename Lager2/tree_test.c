@@ -92,7 +92,7 @@ void test_add_to_tree(tree *input_tree) {
     printf("%s finns redan i databasen.\n", new_key);
     char *answer = string_new();
     while (true) {
-    string_entry("Vill du lägga till fler av varan?", answer);
+      string_entry("Vill du lägga till fler av varan?", answer);
       if (string_equals(answer, "ja")) {
         test_increment_shelves(input_tree, existing_node);
         break;
@@ -171,16 +171,32 @@ void test_remove_node(tree *input_tree) {
     printf("Finns ingen vara med det namnet i systemet.\n");
     return;
   }
-  node_show(to_delete);
   
-  test_decrement_shelves(input_tree, to_delete);
-  
-  
-  
+  while (true) {
+    node_show(to_delete);
+    test_remove_shelves(input_tree, to_delete);
+    
+    if (find_node_in_tree(node_name, input_tree) == NULL) break;
+    
+    char *answer = string_new();
+    
+    while (!(string_equals(answer, "nej") || string_equals(answer, "ja"))) {
+      string_entry("Vill du ta bort varan från en annan hylla också?", answer);
+      if (string_equals(answer, "nej")) {
+        free(answer);
+        return;
+      } 
+      if (string_equals(answer, "ja")) {
+        free(answer);
+        break;
+      }
+      printf("Vänligen svara ja eller nej.\n");
+    }
+  }
   free(node_name);
 }
 
-void test_decrement_shelves(tree *input_tree, node *input_node) {
+void test_remove_shelves(tree *input_tree, node *input_node) {
   ware *input_ware = node_get_ware(input_node);
   shelves_list *input_shelves = ware_get_shelves(input_ware);
   int shelves_size = shelves_list_get_size(input_shelves);
@@ -188,14 +204,11 @@ void test_decrement_shelves(tree *input_tree, node *input_node) {
   
   if (shelves_size > 1) {
     int choice = 0;
-    while (!test_remove_shelves(input_node, shelves_size, &choice));
+    while (!test_choose_shelves(input_node, shelves_size, &choice));
     list_node *to_remove_from = find_list_node_by_index(input_shelves, choice-1);
     shelf *to_decrement = (shelf *) list_node_get_data(to_remove_from);
-    while (true) {
-      int_entry("Hur många av varan ska tas bort?", &decrement);
-      if (decrement > shelf_get_quantity(to_decrement)) printf("Du kan inte ta bort mer än vad som finns på denna hylla, tänk på att du angav %d vilket är mer än %d!\n", decrement, shelf_get_quantity(to_decrement));
-      else break;
-    }
+    
+    test_input_decrement(to_decrement, &decrement);
     
     shelf_decrement_quantity(to_decrement, decrement);
     ware_decrement_amount(input_ware, decrement);
@@ -207,28 +220,33 @@ void test_decrement_shelves(tree *input_tree, node *input_node) {
     list_node *only_list_node = shelves_list_get_first(input_shelves);
     shelf *to_decrement = (shelf *) list_node_get_data(only_list_node);
     
-    while (true) {
-      int_entry("Hur många av varan ska tas bort?", &decrement);
-      if (decrement > shelf_get_quantity(to_decrement)) printf("Du kan inte ta bort mer än vad som finns på denna hylla, tänk på att du angav %d vilket är mer än %d!\n", decrement, shelf_get_quantity(to_decrement));
-      else break;
-    }
+    test_input_decrement(to_decrement, &decrement);
     
     shelf_decrement_quantity(to_decrement, decrement);
+    ware_decrement_amount(input_ware, decrement);
     if (shelf_is_empty(to_decrement)) {
       if (tree_node_remove(input_tree, node_get_key(input_node))) {
-        printf("A node was successfully removed from the tree!\n");
+        printf("Varan är nu borttagen från systemet!\n");
       }
       else {
-        printf("It was not possible to remove the node from the test tree...\n");
+        printf("It was not possible to remove the node from the tree...\n");
       }
     }
   }
   else {
-    printf("test_decrement_shelves(): Tried to decrement nonexisting shelves...");
+    printf("test_remove_shelves(): Tried to decrement nonexisting shelves...");
   }
 }
 
-bool test_remove_shelves(node *input_node, int shelves_size, int *choice) {
+void test_input_decrement(shelf *input_shelf, int *decrement) {
+  while (true) {
+    int_entry("Hur många av varan ska tas bort?", decrement);
+    if (*decrement > shelf_get_quantity(input_shelf)) printf("Du kan inte ta bort mer än vad som finns på denna hylla, tänk på att du angav %d vilket är mer än %d!\n", *decrement, shelf_get_quantity(input_shelf));
+    else break;
+  }
+}
+
+bool test_choose_shelves(node *input_node, int shelves_size, int *choice) {
   int_entry("Vilken hyllplats skall tas bort ifrån?", choice);  
   bool valid_choice = false;
   valid_choice = (*choice >= 1) && (*choice <= shelves_size);
