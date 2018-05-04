@@ -175,6 +175,11 @@ void shelf_copy(shelf *destination, shelf *source) {
   destination->quantity = source->quantity;
 }
 
+/* Returns true if the shelf is empty. */
+bool shelf_is_empty(shelf *input_shelf) {
+  return input_shelf->quantity == 0;
+}
+
 /* Returns the location of the input_shelf */
 char *shelf_get_location(shelf *input_shelf) {
   return input_shelf->location;

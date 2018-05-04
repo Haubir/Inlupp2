@@ -101,6 +101,11 @@ bool shelf_free(shelf *to_delete);
 /// Copies the source shelf into the destination shelf
 void shelf_copy(shelf *destination, shelf *source);
 
+/// Checks whether the input_shelf is empty, i.e. has a quantity of 0.
+///
+/// \returns: true if the shelf is empty 
+bool shelf_is_empty(shelf *input_shelf);
+
 /// Returns the location of the shelf
 ///
 /// \returns: a string (a char pointer)

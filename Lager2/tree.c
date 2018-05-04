@@ -372,12 +372,9 @@ bool find_shelf_in_tree_aux(char *key, node *iter) {
   ware *iter_ware = iter->ware;
   shelves_list *iter_shelves = ware_get_shelves(iter_ware);
   
+  if (iter->left) return find_shelf_in_tree_aux(key, iter->left);
   if (shelf_already_exists(iter_shelves, key)) return true;
-  
-  
-  if (iter->left) find_shelf_in_tree_aux(key, iter->left);
-  
-  if (iter->right) find_shelf_in_tree_aux(key, iter->right);
+  if (iter->right) return find_shelf_in_tree_aux(key, iter->right);
   
   return false;
 }
