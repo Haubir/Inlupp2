@@ -1,0 +1,57 @@
+//
+//  io.h
+//  Lager2
+//
+//  Created by Haubir Mariwani on 5/5/18.
+//  Copyright © 2018 HauCorp. All rights reserved.
+//
+
+#ifndef io_h
+#define io_h
+
+#include "tree.h"
+
+tree *preset_tree(void);
+
+tree *test_add_root(char *key);
+
+void io_add_to_tree(tree *input_tree);
+
+void io_increment_shelves(node *input_node, char *shelf_location, char *flag);
+
+/// Checks if the shelf_location follows the correct naming format for shelf locations, and also if the given shelf location is already occupied.
+///
+/// \returns: true if the shelf is of valid naming format and not occupied, else false
+bool io_add_shelves(tree *input_tree, node *input_node, char *shelf_location, char *flag);
+
+void io_remove_node(tree *input_tree);
+
+void io_remove_shelves(tree *input_tree, node *input_node);
+
+void io_input_decrement(shelf *input_shelf, int *decrement);
+
+bool io_choose_shelves(int shelves_size, int *choice);
+
+void io_edit_node(tree *input_tree);
+
+/// Edits a node in the tree and rebalances the node if necessary
+///
+/// \returns: true if successful
+bool io_tree_node_edit(tree *input_tree);
+
+/// Edits a node
+bool io_node_edit(tree *input_tree, node *input_node);
+
+/// Interface for editing the shelves where the input_ware is located
+void io_ware_edit_shelves(tree *input_tree, ware *input_ware);
+
+/// Interface for editing a shelf
+void io_edit_shelf(tree *input_tree, shelf *input_shelf);
+
+/// Interface for editing a shelf's quantity
+void io_shelf_edit_quantity(shelf *input_shelf);
+
+/// Interface for picking one of the shelves where the input_ware is located
+bool io_ware_edit_choose_shelves(int shelves_size, int *choice);
+
+#endif /* io_h */

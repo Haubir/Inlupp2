@@ -1,13 +1,12 @@
 //
-//  tree_test.c
+//  io.c
 //  Lager2
 //
-//  Created by Haubir Mariwani on 4/18/18.
+//  Created by Haubir Mariwani on 5/5/18.
 //  Copyright © 2018 HauCorp. All rights reserved.
 //
 
-#include "tree_test.h"
-/* ---------------------------------------------------------------------- TEST CODE BELOW ---------------------------------------------------------------------------------- */
+#include "io.h"
 
 // Only for development purposes. Creates a new tree with 7 nodes. 
 tree *preset_tree() {
@@ -83,7 +82,7 @@ tree *test_add_root(char *ware_name) {
 }
 
 // Only for development purposes. Tests the ability to add nodes to a tree.
-void test_add_to_tree(tree *input_tree) {
+void io_add_to_tree(tree *input_tree) {
   char *new_key = string_new();
   string_entry("Skriv ett namn för varan: ", new_key);
   char *shelf_location = string_new();
@@ -95,7 +94,7 @@ void test_add_to_tree(tree *input_tree) {
     while (true) {
       string_entry("Vill du lägga till fler av varan?", answer);
       if (string_equals(answer, "ja")) {
-        while (!test_add_shelves(input_tree, existing_node, shelf_location, "existing"));
+        while (!io_add_shelves(input_tree, existing_node, shelf_location, "existing"));
         break;
       }
       if (string_equals(answer, "nej")) {
@@ -109,7 +108,7 @@ void test_add_to_tree(tree *input_tree) {
     node *new_node = node_new();
     ware_enter_information(node_get_ware(new_node), new_key);
     
-    while (!test_add_shelves(input_tree, new_node, shelf_location, "new"));
+    while (!io_add_shelves(input_tree, new_node, shelf_location, "new"));
     
     node_set_key(new_node, ware_get_key(node_get_ware(new_node)));  
     
@@ -122,7 +121,7 @@ void test_add_to_tree(tree *input_tree) {
   }
 }
 
-void test_increment_shelves(node *input_node, char *shelf_location, char *flag) {
+void io_increment_shelves(node *input_node, char *shelf_location, char *flag) {
   int increment = 0;
   int_entry("Hur många styck vill du lägga till?", &increment);
   ware *input_ware = node_get_ware(input_node);
@@ -137,7 +136,7 @@ void test_increment_shelves(node *input_node, char *shelf_location, char *flag) 
 }
 
 // Checks if the shelf_location follows the correct naming format for shelf locations, and also if the given shelf location is already occupied.
-bool test_add_shelves(tree *input_tree, node *input_node, char *shelf_location, char *flag) {
+bool io_add_shelves(tree *input_tree, node *input_node, char *shelf_location, char *flag) {
   string_entry("Ange den hyllplats som du vill placera varan på: ", shelf_location);  
   
   if (!is_shelf(shelf_location)) {
@@ -157,7 +156,7 @@ bool test_add_shelves(tree *input_tree, node *input_node, char *shelf_location, 
       while (!(string_equals(answer, "ja") || string_equals(answer, "nej"))) {
         string_entry("Vill du utöka antalet på denna hylla?", answer);
         if (string_equals(answer, "ja")) {
-          test_increment_shelves(input_node, shelf_location, "existing");
+          io_increment_shelves(input_node, shelf_location, "existing");
           return true;
         }
         if (string_equals(answer, "nej")) {
@@ -169,14 +168,14 @@ bool test_add_shelves(tree *input_tree, node *input_node, char *shelf_location, 
     }
   }
   else {
-    test_increment_shelves(input_node, shelf_location, "new");
+    io_increment_shelves(input_node, shelf_location, "new");
   }
   
   return true;
 }
 
 // Only for development purposes. Tests the ability to remove a node from a tree.
-void test_remove_node(tree *input_tree) {
+void io_remove_node(tree *input_tree) {
   node *root_node = *(tree_get_root(input_tree));
   
   if (root_node == NULL) {
@@ -196,7 +195,7 @@ void test_remove_node(tree *input_tree) {
   
   while (true) {
     node_show(to_delete);
-    test_remove_shelves(input_tree, to_delete);
+    io_remove_shelves(input_tree, to_delete);
     
     if (find_node_in_tree(node_name, input_tree) == NULL) break;
     
@@ -218,7 +217,7 @@ void test_remove_node(tree *input_tree) {
   free(node_name);
 }
 
-void test_remove_shelves(tree *input_tree, node *input_node) {
+void io_remove_shelves(tree *input_tree, node *input_node) {
   ware *input_ware = node_get_ware(input_node);
   shelves_list *input_shelves = ware_get_shelves(input_ware);
   int shelves_size = shelves_list_get_size(input_shelves);
@@ -226,11 +225,11 @@ void test_remove_shelves(tree *input_tree, node *input_node) {
   
   if (shelves_size > 1) {
     int choice = 0;
-    while (!test_choose_shelves(input_node, shelves_size, &choice));
+    while (!io_choose_shelves(shelves_size, &choice));
     list_node *to_remove_from = find_list_node_by_index(input_shelves, choice-1);
     shelf *to_decrement = (shelf *) list_node_get_data(to_remove_from);
     
-    test_input_decrement(to_decrement, &decrement);
+    io_input_decrement(to_decrement, &decrement);
     
     shelf_decrement_quantity(to_decrement, decrement);
     ware_decrement_amount(input_ware, decrement);
@@ -242,7 +241,7 @@ void test_remove_shelves(tree *input_tree, node *input_node) {
     list_node *only_list_node = shelves_list_get_first(input_shelves);
     shelf *to_decrement = (shelf *) list_node_get_data(only_list_node);
     
-    test_input_decrement(to_decrement, &decrement);
+    io_input_decrement(to_decrement, &decrement);
     
     shelf_decrement_quantity(to_decrement, decrement);
     ware_decrement_amount(input_ware, decrement);
@@ -260,7 +259,7 @@ void test_remove_shelves(tree *input_tree, node *input_node) {
   }
 }
 
-void test_input_decrement(shelf *input_shelf, int *decrement) {
+void io_input_decrement(shelf *input_shelf, int *decrement) {
   while (true) {
     int_entry("Hur många av varan ska tas bort?", decrement);
     if (*decrement > shelf_get_quantity(input_shelf)) printf("Du kan inte ta bort mer än vad som finns på denna hylla, tänk på att du angav %d vilket är mer än %d!\n", *decrement, shelf_get_quantity(input_shelf));
@@ -268,7 +267,7 @@ void test_input_decrement(shelf *input_shelf, int *decrement) {
   }
 }
 
-bool test_choose_shelves(node *input_node, int shelves_size, int *choice) {
+bool io_choose_shelves(int shelves_size, int *choice) {
   int_entry("Vilken hyllplats skall tas bort ifrån?", choice);  
   bool valid_choice = false;
   valid_choice = (*choice >= 1) && (*choice <= shelves_size);
@@ -282,6 +281,202 @@ bool test_choose_shelves(node *input_node, int shelves_size, int *choice) {
 }
 
 // Only for development purposes. Tests the ability to edit a node in the tree, and find a new position for it in the tree if necessary.
-void test_edit_node(tree *input_tree) {
-  tree_node_edit(input_tree);
+void io_edit_node(tree *input_tree) {
+  io_tree_node_edit(input_tree);
+}
+
+/* Edits a node in the tree and rebalances the node if necessary */
+bool io_tree_node_edit(tree *input_tree) {
+  if (!tree_get_root(input_tree)) return false;
+  
+  node *tree_root = *(tree_get_root(input_tree));
+  
+  if (tree_root == NULL) {
+    printf("There are no nodes in the tree to edit...\n");
+    return false;
+  }
+  
+  tree_list_nodes(input_tree);
+  
+  char *key = string_new();
+  string_entry("Skriv namnet på varan som du önskar att redigera:", key);
+  node *to_edit = find_node_in_tree(key, input_tree);
+  free(key);
+  
+  if (!to_edit) {
+    printf("The node to edit was not found in the tree...\n");
+    return false; // The node to edit was not found
+  }
+  else {    
+    node *copy_of_edited = node_new();
+    node_copy(copy_of_edited, to_edit);
+    
+    set_left_node(copy_of_edited, NULL);
+    set_right_node(copy_of_edited, NULL);
+    set_parent_node(copy_of_edited, NULL);
+    
+    if (io_node_edit(input_tree, copy_of_edited)) { 
+      tree_node_remove(input_tree, node_get_key(to_edit));
+      tree_node_add(input_tree, copy_of_edited);
+    }
+    else node_free(copy_of_edited);
+  }
+  
+  return true;
+}
+
+// TODO!!!
+/// - Först ska nodens info visas på skärmen.
+/// - Sedan ska användaren få välja vilket attribut den vill ändra
+///
+/// \returns: true
+bool io_node_edit(tree *input_tree, node *input_node) {
+  char *answer = string_new();
+  
+  printf("Vill du redigera varan?\nDitt svar: ");
+  while(string_compare(answer, "j") != 0 && string_compare(answer, "n") != 0){
+    string_entry("Svara 'j' för ja, 'n' för nej.", answer);
+  }
+  
+  if (string_compare(answer, "n") == 0){
+    free(answer);
+    return false;
+  }
+  
+  node_show(input_node);
+  string_entry("Svara med 1-5 för att välja ett av alternativen eller skriv \"avsluta\" för att avsluta och återvända till huvudmenyn.\n1. Redigera namn\n2. Redigera beskrivning\n3. Redigera pris\n4. Redigera antal\n5. Redigera hyllplats(er)", answer);
+  while ((string_compare(answer, "1") != 0) &&
+         (string_compare(answer, "2") != 0) &&
+         (string_compare(answer, "3") != 0) &&
+         (string_compare(answer, "4") != 0) &&
+         (string_compare(answer, "5") != 0) &&
+         (string_compare(answer, "avsluta") != 0)) {
+    string_entry("Svara med 1-5 för att välja ett av alternativen eller skriv \"avsluta\" för att avsluta och återvända till huvudmenyn.", answer);
+    
+    if (string_compare(answer, "avsluta") == 0) {
+      string_entry("Är du säker på att du vill avsluta?\n(J/j) för ja, (N/n) för nej.", answer);
+      
+      if (string_compare(answer, "j") == 0) {
+        printf("Du har valt att avsluta.\n");
+        free(answer);
+        return false;
+      }
+    }
+  }
+  
+  switch (string_to_int(answer)) {
+    case 1:
+      node_name_edit(input_node);
+      break;
+      
+    case 2:
+      ware_edit_description(node_get_ware(input_node));
+      break;
+      
+    case 3:
+      ware_edit_price(node_get_ware(input_node));
+      break;
+      
+    case 4:
+      ware_edit_amount(node_get_ware(input_node));
+      break;
+      
+    case 5:
+      //printf("To be implemented...\n");
+      io_ware_edit_shelves(input_tree, node_get_ware(input_node));
+      break;
+      
+    default:
+      break;
+  }
+  
+  free(answer);
+  return true;
+}
+
+/* Interface for editing the shelves where the input_ware is located */
+void io_ware_edit_shelves(tree *input_tree, ware *input_ware) {
+  shelves_show(ware_get_shelves(input_ware), "shelf");
+  shelves_list *input_list = ware_get_shelves(input_ware);
+  
+  int shelves_size = shelves_list_get_size(input_list);
+  int choice = 0;
+  
+  while (!io_ware_edit_choose_shelves(shelves_size, &choice));
+  
+  list_node *list_node_to_edit = find_list_node_by_index(input_list, choice-1);
+  shelf *shelf_to_edit = (shelf *) list_node_get_data(list_node_to_edit);
+  io_edit_shelf(input_tree, shelf_to_edit);
+  ware_update_amount(input_ware);
+}
+
+void io_edit_shelf(tree *input_tree, shelf *input_shelf) {
+  shelf_show(input_shelf);
+  char *answer = string_new();
+  string_entry("\nSvara med 1 eller 2 för att välja ett av alternativen.\n1. Redigera namn\n2. Redigera antal", answer);
+  
+  while ((!string_equals(answer, "1")) && (!string_equals(answer, "2"))) {
+    string_entry("Vänligen svara med 1 eller 2 för att välja ett av alternativen.", answer);
+  }
+  
+  if (string_equals(answer, "1")) {
+    bool already_taken = true;
+    char *new_shelf_location = string_new();
+    while (already_taken) {
+      string_entry("Vänligen ange ett nytt hyllnamn:", new_shelf_location);
+      already_taken = find_shelf_in_tree(new_shelf_location, input_tree);
+      
+      if (!already_taken) break;
+      else printf("Du angav en redan upptagen hylla.\n");
+    }
+    free(shelf_get_location(input_shelf));
+    shelf_set_location(input_shelf, new_shelf_location);
+  }
+  
+  if (string_equals(answer, "2")) {
+    io_shelf_edit_quantity(input_shelf);
+  }
+  
+  free(answer);  
+}
+
+void io_shelf_edit_quantity(shelf *input_shelf) {
+  char *answer = string_new();
+  string_entry("Svara med 1-3 för att välja ett av alternativen.\n1. Öka antalet av varan på denna hylla\n2. Minska antalet av varan på denna hylla\n3. Ange nytt antal av varan på denna hylla", answer);
+  while ((!string_equals(answer, "1")) && 
+         (!string_equals(answer, "2")) && 
+         (!string_equals(answer, "3"))) {
+    string_entry("Vänligen svara med 1-3 för att välja ett av alternativen.", answer);
+  }
+  
+  if (string_equals(answer, "1")) {
+    int increment = 0;
+    int_entry("Vänligen ange hur mycket du vill öka antalet med:", &increment);
+    shelf_increment_quantity(input_shelf, increment);
+  }
+  if (string_equals(answer, "2")) {
+    int decrement = 0;
+    int_entry("Vänligen ange hur mycket du vill minska antalet med:", &decrement);
+    shelf_decrement_quantity(input_shelf, decrement);
+  }
+  if (string_equals(answer, "3")) {
+    int new_quantity = 0;
+    int_entry("Vänligen ange varans nya antal på denna hylla:", &new_quantity);
+    shelf_set_quantity(input_shelf, new_quantity);
+  }
+  
+  free(answer);
+}
+
+bool io_ware_edit_choose_shelves(int shelves_size, int *choice) {
+  int_entry("Vilken hyllplats skall ändras?", choice);  
+  bool valid_choice = false;
+  valid_choice = (*choice >= 1) && (*choice <= shelves_size);
+  
+  if (!valid_choice) {
+    printf("Vänligen skriv en siffra mellan 1-%d för att välja en av hyllplatserna.\n", shelves_size);
+    return false;
+  } 
+  
+  return true;
 }
