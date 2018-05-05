@@ -435,6 +435,7 @@ void io_edit_shelf(tree *input_tree, shelf *input_shelf) {
   
   if (string_equals(answer, "2")) {
     io_shelf_edit_quantity(input_shelf);
+    // TODO!!! Ifall en hyllas antal är 0 efter redigering, ska hyllan tas bort
   }
   
   free(answer);  
