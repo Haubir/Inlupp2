@@ -25,26 +25,26 @@ tree *preset_tree() {
   ware_set_price(node_get_ware(root_node), root_price);
   ware_set_amount(node_get_ware(root_node), root_amount);
   
-  char *list[6] = {"o", "j", "m", "g", "f", "h"};
-  char *key_list[6];
-  for (int i = 0; i < 6; i++) {
+  char *list[13] = {"o", "j", "m", "g", "f", "h", "w", "q", "t", "k", "y", "p", "c"};
+  char *key_list[13];
+  for (int i = 0; i < 13; i++) {
     char *new_key = string_new();
     strncpy(new_key, list[i], (size_t) string_length(list[i]));
     key_list[i] = new_key;
   }
   
-  char *descript[6] = {"The letter o.", "The letter j.", "The letter m.", "The letter g.", "The letter f.", "The letter h."};
-  char *description_list[6];
-  for (int i = 0; i < 6; i++) {
+  char *descript[13] = {"The letter o.", "The letter j.", "The letter m.", "The letter g.", "The letter f.", "The letter h.", "The letter h.", "The letter h.", "The letter h.", "The letter h.", "The letter h.", "The letter h.", "The letter h.", };
+  char *description_list[13];
+  for (int i = 0; i < 13; i++) {
     char *new_description = string_new();
     strncpy(new_description, descript[i], (size_t) string_length(descript[i]));
     description_list[i] = new_description;
   }
   
-  int prices[6] = {4, 17, 99, 3, 2, 47};
-  int amounts[6] = {1, 3, 7, 10, 2, 5};
+  int prices[13] = {4, 17, 99, 3, 2, 47, 55, 67, 78, 89, 90, 22, 31};
+  int amounts[13] = {1, 3, 7, 10, 2, 5, 55, 67, 78, 89, 90, 22, 31};
   
-  for (int i = 0; i < 6; i++) { 
+  for (int i = 0; i < 13; i++) { 
     node *new_node = node_new();
     ware_set_key(node_get_ware(new_node), key_list[i]);
     ware_set_description(node_get_ware(new_node), description_list[i]);
@@ -484,7 +484,8 @@ bool io_ware_edit_choose_shelves(int shelves_size, int *choice) {
 
 /// Interface for selecting wares from the tree and putting them in a shopping cart
 void io_shopping_cart(tree *main_tree, tree *shopping_cart_tree) {
-  while (true) {
+  bool keep_going = true;
+  while (keep_going) {
     io_list_shopping_cart(shopping_cart_tree);
     printf("\nVaror i databasen:\n\n");
     tree_list_nodes(main_tree);
@@ -496,6 +497,21 @@ void io_shopping_cart(tree *main_tree, tree *shopping_cart_tree) {
       printf("io_shopping_cart(): chosen_node = NULL...\n");
       continue;
     }
+    node *existing_node = find_node_in_tree(node_get_key(chosen_node), shopping_cart_tree);
+    if (existing_node != NULL) {
+      char *answer = string_new();
+      string_entry("Denna varan finns redan på din pall. Vill du öka antalet?", answer);
+      if (string_equals(answer, "ja")) {
+        free(answer);
+        int increment = 0;
+        int_entry("Hur många fler av varan vill du lägga till?", &increment);
+        ware *existing_ware = node_get_ware(existing_node);
+        ware_increment_amount(existing_ware, increment);
+      }
+      else if (string_equals(answer, "nej")) free(answer);
+      
+      continue;
+    }
     printf("-----------------------------------\n");
     node_show(chosen_node);
     
@@ -505,12 +521,18 @@ void io_shopping_cart(tree *main_tree, tree *shopping_cart_tree) {
     set_parent_node(shopping_node, NULL);
     set_right_node(shopping_node, NULL);
     
-    tree_node_add(shopping_cart_tree, chosen_node);
+    int max_amount = ware_get_amount(node_get_ware(chosen_node));
+    int insert_amount = 0;
+    while (!io_choose_ware_amount_to_shop(max_amount, &insert_amount));
+    ware_set_amount(node_get_ware(shopping_node), insert_amount);
+    
+    tree_node_add(shopping_cart_tree, shopping_node);
     
     char *answer = string_new();
     string_entry("Vill du packa en till vara?", answer);
-    if (string_equals(answer, "ja")) continue;
-    else if (string_equals(answer, "nej")) break;
+    if (string_equals(answer, "ja")) keep_going = true;
+    else if (string_equals(answer, "nej")) keep_going = false;
+    free(answer);
   }
   
 }
@@ -520,6 +542,8 @@ void io_list_shopping_cart(tree *shopping_cart_tree) {
   else {
     printf("\nDin pall:\n");
     tree_list_nodes(shopping_cart_tree);
+    int total_price = io_total_price_of_cart(shopping_cart_tree);
+    printf("Totalt pris för pallen: %d kr", total_price);
   }
 }
 
@@ -534,4 +558,45 @@ bool io_choose_ware(int tree_size, int *choice) {
   } 
   
   return true;
+}
+
+bool io_choose_ware_amount_to_shop(int max_amount, int *choice) {
+  int_entry("Hur många vill du packa?", choice);  
+  bool valid_choice = false;
+  valid_choice = (*choice >= 1) && (*choice <= max_amount);
+  
+  if (*choice > max_amount) {
+    printf("Det finns endast %d styck av denna vara, vänligen välj ett antal mellan 1-%d.\n", max_amount, max_amount);
+    return false;
+  }
+  
+  if (*choice < 1) {
+    printf("Vänligen välj ett antal mellan 1-%d.\n", max_amount);
+    return false;
+  } 
+  
+  return true;
+}
+
+int io_total_price_of_cart(tree *shopping_cart_tree) {
+  int total_price = 0;
+  node **tree_root = tree_get_root(shopping_cart_tree);
+  
+  if (tree_size(shopping_cart_tree) == 1) {
+    
+    ware *root_ware = node_get_ware(*tree_root);
+    for (int i = 0; i < ware_get_amount(root_ware); i++) total_price += ware_get_price(root_ware);
+  }
+  else {
+    io_total_price_of_cart_aux(*tree_root, &total_price);
+  }
+  
+  return total_price;
+}
+
+void io_total_price_of_cart_aux(node *iter, int *price_ptr) {
+  if (get_left_node(iter)) io_total_price_of_cart_aux(get_left_node(iter), price_ptr);
+  ware *iter_ware = node_get_ware(iter);
+  for (int i = 0; i < ware_get_amount(iter_ware); i++) *price_ptr += ware_get_price(iter_ware);
+  if (get_right_node(iter)) io_total_price_of_cart_aux(get_right_node(iter), price_ptr);
 }

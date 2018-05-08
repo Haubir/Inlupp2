@@ -358,19 +358,19 @@ node *find_node_by_index(tree *input_tree, int index) {
   
   int count = 1;
   node *root_node = *(input_tree->root);
-  node *to_return = find_node_by_index_aux(root_node, index, &count);
+  node *to_return = calloc(1, sizeof(node *));
+  find_node_by_index_aux(root_node, index, &count, &to_return);
   
   
   return to_return;
 }
 
-node *find_node_by_index_aux(node *iter, int index, int *count_ptr) {
-  if (iter->left) return find_node_by_index_aux(iter->left, index, count_ptr);
-  if ((*count_ptr) == index) return iter;
-  (*count_ptr)++;
-  if (iter->right) return find_node_by_index_aux(iter->right, index, count_ptr);
+void find_node_by_index_aux(node *iter, int index, int *count_ptr, node **dest_node_ptr) {
   
-  return NULL;
+  if (iter->left) find_node_by_index_aux(iter->left, index, count_ptr, dest_node_ptr);
+  if ((*count_ptr) == index) *dest_node_ptr = iter;
+  (*count_ptr)++;
+  if (iter->right) find_node_by_index_aux(iter->right, index, count_ptr, dest_node_ptr);
 }
 
 /* Searches through the tree to find a node that matches the input key. If a node is found, dest_node will point to it when the function is done. */

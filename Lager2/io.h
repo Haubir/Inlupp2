@@ -63,4 +63,11 @@ void io_list_shopping_cart(tree *shopping_cart_tree);
 /// Interface for picking one of the wares in the tree to put in a shopping cart
 bool io_choose_ware(int tree_size, int *choice);
 
+/// Interface for choosing how many of a ware put in a shopping cart
+bool io_choose_ware_amount_to_shop(int max_amount, int *choice);
+
+int io_total_price_of_cart(tree *shopping_cart_tree);
+
+void io_total_price_of_cart_aux(node *iter, int *price_ptr);
+
 #endif /* io_h */
