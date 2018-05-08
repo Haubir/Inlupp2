@@ -42,7 +42,7 @@ void tree_set_root(tree *input_tree, node **new_root);
 void tree_list_nodes(tree *input_tree);
 
 /// Auxilliary function for tree_list_nodes, that traverses through the tree and prints information about all the nodes in the tree
-void tree_list_nodes_aux(node *iter);
+void tree_list_nodes_aux(node *iter, int *count_ptr);
 
 /// Creates a new root 
 ///
@@ -110,9 +110,6 @@ void tree_copy(tree *destination, tree *source);
 /// Copies a node into another node
 void node_copy(node *destination, node *source);
 
-/// Edits a node
-bool node_edit(node *input_node);
-
 /// Shows a node's information
 void node_show(node *input_node);
 
@@ -162,6 +159,16 @@ node *find_node_in_tree(char *key, tree *tree_root);
 /// \returns: a node or NULL
 node *find_node_in_tree_aux(char *key, node *root_node);
 
+/// Searches through the tree to find a node whose index matches the input index. If a node is found, it is returned. Eitherwise NULL is returned.
+///
+/// \returns: a node or NULL
+node *find_node_by_index(tree *input_tree, int index);
+
+/// Auxilliary recursive function for find_node_in_tree that goes through each node to find a node whose index matches int that the index_ptr is pointing to. If a node is found, it is returned. Eitherwise NULL is returned.
+///
+/// \returns: a node or NULL
+node *find_node_by_index_aux(node *iter, int index, int *count_ptr);
+
 /// Searches through the tree to find a shelf that matches the input key.
 ///
 /// \returns: true if a shelf was found, else false
@@ -188,11 +195,6 @@ void tree_rebalance_right_child_shift(node *replacement, node *to_rebalance);
 
 /// Shifts the replacement node to the to_rebalance node's position over the left child of to_rebalance. All pointers are correctly shifted. 
 void tree_rebalance_left_child_shift(node *replacement, node *to_rebalance);
-
-/// Edits a node in the tree and rebalances the node if necessary
-///
-/// \returns: true if successful
-bool tree_node_edit(tree *input_tree);
 
 /// Displays the input_node's contents
 void node_show(node *input_node);

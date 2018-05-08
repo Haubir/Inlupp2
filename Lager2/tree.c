@@ -62,20 +62,25 @@ void tree_list_nodes(tree *input_tree) {
     printf("Det finns inga varor i databasen.\n\n\n");
     return;
   }
-  
+  int count = 1;
   if (!node_has_children(root_node)) {
-    node_show(root_node);
+    printf("%d. %s\n\n", count, root_node->key);
+    //node_show(root_node);
     return;
   }
   
-  tree_list_nodes_aux(root_node);
+  tree_list_nodes_aux(root_node, &count);
+ 
+  printf("\n");
 }
 
 /* Auxilliary function for tree_list_nodes, that traverses through the tree and prints information about all the nodes in the tree */
-void tree_list_nodes_aux(node *iter) {
-  if (iter->left) tree_list_nodes_aux(iter->left);
-  node_show(iter);
-  if (iter->right) tree_list_nodes_aux(iter->right);
+void tree_list_nodes_aux(node *iter, int *count_ptr) {
+  if (iter->left) tree_list_nodes_aux(iter->left, count_ptr);
+  printf("%d. %s\n", *count_ptr, iter->key);
+  //node_show(iter);
+  (*count_ptr)++;
+  if (iter->right) tree_list_nodes_aux(iter->right, count_ptr);
 }
 
 /* Creates a new root for a tree */
@@ -162,13 +167,11 @@ void tree_copy(tree *destination, tree *source) {
 
 /* Copies the source node into the destination node */
 void node_copy(node *destination, node *source) {
-  char *dest_key = string_new();
-  string_copy(dest_key, node_get_key(source));
-  node_set_key(destination, dest_key);
-  
   ware *dest_ware = ware_new();
   ware_copy(dest_ware, node_get_ware(source));
   node_set_ware(destination, dest_ware);
+  char *ware_key = ware_get_key(dest_ware);
+  node_set_key(destination, ware_key);
   
   set_left_node(destination, get_left_node(source));
   set_parent_node(destination, get_parent_node(source));
@@ -223,11 +226,6 @@ bool tree_node_add(tree *input_tree, node *to_insert) {
     }
   }
   else {
-    /* *(input_tree->root) = calloc(1, sizeof(node));
-    node *root_node = *(input_tree->root);
-    node_copy(root_node, to_insert);
-    free(to_insert); */
-    
     *(input_tree->root) = to_insert;
     
     input_tree->size++;
@@ -348,6 +346,31 @@ node *find_node_in_tree_aux(char *key, node *start_node) {
   else { // Betyder att key == start_node->key
     return start_node;
   }
+}
+
+/// Searches through the tree to find a node whose index matches the input index. If a node is found, it is returned. Eitherwise NULL is returned. */
+node *find_node_by_index(tree *input_tree, int index) {
+  if (*(input_tree->root) == NULL) return NULL;
+  if (index > input_tree->size) {
+    printf("find_node_by_index(): Index out of bounds.\n");
+    return NULL;
+  }
+  
+  int count = 1;
+  node *root_node = *(input_tree->root);
+  node *to_return = find_node_by_index_aux(root_node, index, &count);
+  
+  
+  return to_return;
+}
+
+node *find_node_by_index_aux(node *iter, int index, int *count_ptr) {
+  if (iter->left) return find_node_by_index_aux(iter->left, index, count_ptr);
+  if ((*count_ptr) == index) return iter;
+  (*count_ptr)++;
+  if (iter->right) return find_node_by_index_aux(iter->right, index, count_ptr);
+  
+  return NULL;
 }
 
 /* Searches through the tree to find a node that matches the input key. If a node is found, dest_node will point to it when the function is done. */
@@ -474,114 +497,6 @@ void tree_rebalance_right_child_shift(node *replacement, node *to_rebalance) {
 void tree_rebalance_left_child_shift(node *replacement, node *to_rebalance) {
   replacement->left = to_rebalance->left; 
   replacement->left->parent = replacement; 
-}
-
-/* Edits a node in the tree and rebalances the node if necessary */
-bool tree_node_edit(tree *input_tree) {
-  if (!tree_get_root(input_tree)) return false;
-  
-  node *tree_root = *(tree_get_root(input_tree));
-  
-  if (tree_root == NULL) {
-    printf("There are no nodes in the tree to edit...\n");
-    return false;
-  }
-  
-  tree_list_nodes(input_tree);
-  
-  char *key = string_new();
-  string_entry("Skriv namnet på varan som du önskar att redigera:", key);
-  node *to_edit = find_node_in_tree(key, input_tree);
-  free(key);
-  
-  if (!to_edit) {
-    printf("The node to edit was not found in the tree...\n");
-    return false; // The node to edit was not found
-  }
-  else {    
-    node *copy_of_edited = node_new();
-    node_copy(copy_of_edited, to_edit);
-    
-    copy_of_edited->left = NULL;
-    copy_of_edited->right = NULL;
-    copy_of_edited->parent = NULL;
-    
-    tree_node_remove(input_tree, node_get_key(to_edit));
-    
-    if (node_edit(copy_of_edited)) tree_node_add(input_tree, copy_of_edited);
-    else node_free(copy_of_edited);
-  }
-  
-  return true;
-}
-
-// TODO!!!
-/// - Först ska nodens info visas på skärmen.
-/// - Sedan ska användaren få välja vilket attribut den vill ändra
-///
-/// \returns: true
-bool node_edit(node *input_node) {
-  char *answer = string_new();
-  
-  printf("Vill du redigera varan?\nDitt svar: ");
-  while(string_compare(answer, "j") != 0 && string_compare(answer, "n") != 0){
-    string_entry("Svara 'j' för ja, 'n' för nej.", answer);
-  }
-  
-  if (string_compare(answer, "n") == 0){
-    free(answer);
-    return false;
-  }
-  
-  node_show(input_node);
-  string_entry("Svara med 1-5 för att välja ett av alternativen eller skriv \"avsluta\" för att avsluta och återvända till huvudmenyn.\n1. Redigera namn\n2. Redigera beskrivning\n3. Redigera pris\n4. Redigera antal\n5. Redigera hyllplats(er)", answer);
-  while ((string_compare(answer, "1") != 0) &&
-         (string_compare(answer, "2") != 0) &&
-         (string_compare(answer, "3") != 0) &&
-         (string_compare(answer, "4") != 0) &&
-         (string_compare(answer, "5") != 0) &&
-         (string_compare(answer, "avsluta") != 0)) {
-    string_entry("Svara med 1-5 för att välja ett av alternativen eller skriv \"avsluta\" för att avsluta och återvända till huvudmenyn.", answer);
-    
-    if (string_compare(answer, "avsluta") == 0) {
-      string_entry("Är du säker på att du vill avsluta?\n(J/j) för ja, (N/n) för nej.", answer);
-      
-      if (string_compare(answer, "j") == 0) {
-        printf("Du har valt att avsluta.\n");
-        free(answer);
-        return false;
-      }
-    }
-  }
-  
-  switch (string_to_int(answer)) {
-    case 1:
-      node_name_edit(input_node);
-      break;
-      
-    case 2:
-      ware_edit_description(input_node->ware);
-      break;
-      
-    case 3:
-      ware_edit_price(input_node->ware);
-      break;
-      
-    case 4:
-      ware_edit_amount(input_node->ware);
-      break;
-      
-    case 5:
-      printf("To be implemented...\n");
-      //ware_shelves_edit(input_node->ware);
-      break;
-      
-    default:
-      break;
-  }
-  
-  free(answer);
-  return true;
 }
 
 /// Shows information about a node

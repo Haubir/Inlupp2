@@ -481,3 +481,57 @@ bool io_ware_edit_choose_shelves(int shelves_size, int *choice) {
   
   return true;
 }
+
+/// Interface for selecting wares from the tree and putting them in a shopping cart
+void io_shopping_cart(tree *main_tree, tree *shopping_cart_tree) {
+  while (true) {
+    io_list_shopping_cart(shopping_cart_tree);
+    printf("\nVaror i databasen:\n\n");
+    tree_list_nodes(main_tree);
+    int choice = 0;
+    while (!io_choose_ware(tree_size(main_tree), &choice));
+    
+    node *chosen_node = find_node_by_index(main_tree, choice);
+    if (chosen_node == NULL) {
+      printf("io_shopping_cart(): chosen_node = NULL...\n");
+      continue;
+    }
+    printf("-----------------------------------\n");
+    node_show(chosen_node);
+    
+    node *shopping_node = node_new();
+    node_copy(shopping_node, chosen_node);
+    set_left_node(shopping_node, NULL);
+    set_parent_node(shopping_node, NULL);
+    set_right_node(shopping_node, NULL);
+    
+    tree_node_add(shopping_cart_tree, chosen_node);
+    
+    char *answer = string_new();
+    string_entry("Vill du packa en till vara?", answer);
+    if (string_equals(answer, "ja")) continue;
+    else if (string_equals(answer, "nej")) break;
+  }
+  
+}
+
+void io_list_shopping_cart(tree *shopping_cart_tree) {
+  if (tree_size(shopping_cart_tree) == 0) printf("Din pall är tom.\n");
+  else {
+    printf("\nDin pall:\n");
+    tree_list_nodes(shopping_cart_tree);
+  }
+}
+
+bool io_choose_ware(int tree_size, int *choice) {
+  int_entry("Välj vara att packa på pallen", choice);  
+  bool valid_choice = false;
+  valid_choice = (*choice >= 1) && (*choice <= tree_size);
+  
+  if (!valid_choice) {
+    printf("Vänligen skriv en siffra mellan 1-%d för att välja en av varorna i databasen.\n", tree_size);
+    return false;
+  } 
+  
+  return true;
+}
