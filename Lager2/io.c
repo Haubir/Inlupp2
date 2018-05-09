@@ -8,7 +8,7 @@
 
 #include "io.h"
 
-// Only for development purposes. Creates a new tree with 7 nodes. 
+// Only for development purposes. Creates a new tree with 14 nodes. 
 tree *preset_tree() {
   char *root_name = string_new();
   root_name = "e";
@@ -19,37 +19,46 @@ tree *preset_tree() {
   char *root_description = string_new();
   root_description = "The letter e.";
   int root_price = 23;
-  int root_amount = 8;
+  
+  char *root_shelf = string_new();
+  root_shelf = "A01";
+  int root_shelf_quantity = 9;
   
   ware_set_description(node_get_ware(root_node), root_description);
   ware_set_price(node_get_ware(root_node), root_price);
-  ware_set_amount(node_get_ware(root_node), root_amount);
+  ware_increment_shelves(node_get_ware(root_node), root_shelf, root_shelf_quantity);
+  
   
   char *list[13] = {"o", "j", "m", "g", "f", "h", "w", "q", "t", "k", "y", "p", "c"};
   char *key_list[13];
   for (int i = 0; i < 13; i++) {
     char *new_key = string_new();
-    strncpy(new_key, list[i], (size_t) string_length(list[i]));
+    string_copy(new_key, list[i]);
     key_list[i] = new_key;
   }
   
-  char *descript[13] = {"The letter o.", "The letter j.", "The letter m.", "The letter g.", "The letter f.", "The letter h.", "The letter h.", "The letter h.", "The letter h.", "The letter h.", "The letter h.", "The letter h.", "The letter h.", };
+  char *descript[13] = {"The letter o.", "The letter j.", "The letter m.", "The letter g.", "The letter f.", "The letter h.", "The letter h.", "The letter h.", "The letter h.", "The letter h.", "The letter h.", "The letter h.", "The letter h."};
   char *description_list[13];
   for (int i = 0; i < 13; i++) {
     char *new_description = string_new();
-    strncpy(new_description, descript[i], (size_t) string_length(descript[i]));
+    string_copy(new_description, descript[i]);
     description_list[i] = new_description;
   }
   
   int prices[13] = {4, 17, 99, 3, 2, 47, 55, 67, 78, 89, 90, 22, 31};
-  int amounts[13] = {1, 3, 7, 10, 2, 5, 55, 67, 78, 89, 90, 22, 31};
+  char *shelf_list[13] = {"o", "j", "m", "g", "f", "h", "w", "q", "t", "k", "y", "p", "c"};
+  char *shelf_locations[13];
+  int shelf_quantities[13] = {14, 6, 92, 7, 1, 85, 37, 23, 11, 29, 4, 41, 74};
   
   for (int i = 0; i < 13; i++) { 
     node *new_node = node_new();
     ware_set_key(node_get_ware(new_node), key_list[i]);
     ware_set_description(node_get_ware(new_node), description_list[i]);
     ware_set_price(node_get_ware(new_node), prices[i]);
-    ware_set_amount(node_get_ware(new_node), amounts[i]);
+    char *new_shelf = string_new();
+    string_copy(new_shelf, shelf_list[i]);
+    shelf_locations[i] = new_shelf;
+    ware_increment_shelves(node_get_ware(new_node), shelf_locations[i], shelf_quantities[i]);
     node_set_key(new_node, key_list[i]);
     tree_node_add(new_tree, new_node);
   }
@@ -58,6 +67,10 @@ tree *preset_tree() {
 }
 
 void io_list_nodes(tree *input_tree) {
+  if (tree_size(input_tree) == 0) {
+    printf("Databasen är tom!\n\n");
+    return;
+  }
   tree_list_nodes(input_tree);
   bool keep_going = string_yes_no_question("Svara ja om du vill se mer information om en vara, annars nej för att återgå till huvudmenyn:");
   if (!keep_going) return;
@@ -197,39 +210,22 @@ void io_remove_node(tree *input_tree) {
     printf("Databasen är tom, det finns inget att ta bort!\n");
     return;
   }
+  tree_list_nodes(input_tree);
+  int choice = 0;
+  while (!io_choose_ware("Välj en vara att ta bort.", tree_size(input_tree), &choice));
   
-  char *node_name = string_new();
-  string_entry("Vilken vara vill du ta bort?", node_name);
-  strip_string(node_name);
   
-  node *to_delete = find_node_in_tree(node_name, input_tree);
-  if (to_delete == NULL) {
-    printf("Finns ingen vara med det namnet i systemet.\n");
-    return;
-  }
   
-  while (true) {
+  node *to_delete = find_node_by_index(input_tree, choice);
+  bool keep_going = true;
+  while (keep_going) {
+    // TODO: Fixa så att man också kan ta bort alla styck av en vara direkt från systemet istället för att behöva ta bort hylla för hylla.
     node_show(to_delete);
     io_remove_shelves(input_tree, to_delete);
-    
-    if (find_node_in_tree(node_name, input_tree) == NULL) break;
-    
-    char *answer = string_new();
-    
-    while (!(string_equals(answer, "nej") || string_equals(answer, "ja"))) {
-      string_entry("Vill du ta bort varan från en annan hylla också?", answer);
-      if (string_equals(answer, "nej")) {
-        free(answer);
-        return;
-      } 
-      if (string_equals(answer, "ja")) {
-        free(answer);
-        break;
-      }
-      printf("Vänligen svara ja eller nej.\n");
-    }
+    if (!find_node_in_tree(node_get_key(to_delete), input_tree)) break;
+    keep_going = string_yes_no_question("Vill du ta bort varan från en annan hylla också?");
   }
-  free(node_name);
+  
 }
 
 void io_remove_shelves(tree *input_tree, node *input_node) {
@@ -295,32 +291,26 @@ bool io_choose_shelves(int shelves_size, int *choice) {
   return true;
 }
 
-// Only for development purposes. Tests the ability to edit a node in the tree, and find a new position for it in the tree if necessary.
-void io_edit_node(tree *input_tree) {
-  io_tree_node_edit(input_tree);
-}
-
 /* Edits a node in the tree and rebalances the node if necessary */
-bool io_tree_node_edit(tree *input_tree) {
-  if (!tree_get_root(input_tree)) return false;
+void io_edit_node(tree *input_tree) {
+  if (!tree_get_root(input_tree)) return;
   
   node *tree_root = *(tree_get_root(input_tree));
   
   if (tree_root == NULL) {
     printf("There are no nodes in the tree to edit...\n");
-    return false;
+    return;
   }
   
   tree_list_nodes(input_tree);
+  int choice = 0;
+  while (!io_choose_ware("Vilken vara önskar du att redigera?", tree_size(input_tree), &choice));
+  node *to_edit = find_node_by_index(input_tree, choice);
   
-  char *key = string_new();
-  string_entry("Skriv namnet på varan som du önskar att redigera:", key);
-  node *to_edit = find_node_in_tree(key, input_tree);
-  free(key);
   
   if (!to_edit) {
     printf("The node to edit was not found in the tree...\n");
-    return false; // The node to edit was not found
+    return; // The node to edit was not found
   }
   else {    
     node *copy_of_edited = node_new();
@@ -336,8 +326,6 @@ bool io_tree_node_edit(tree *input_tree) {
     }
     else node_free(copy_of_edited);
   }
-  
-  return true;
 }
 
 // TODO!!!
@@ -347,16 +335,6 @@ bool io_tree_node_edit(tree *input_tree) {
 /// \returns: true
 bool io_node_edit(tree *input_tree, node *input_node) {
   char *answer = string_new();
-  
-  printf("Vill du redigera varan?\nDitt svar: ");
-  while(string_compare(answer, "j") != 0 && string_compare(answer, "n") != 0){
-    string_entry("Svara 'j' för ja, 'n' för nej.", answer);
-  }
-  
-  if (string_compare(answer, "n") == 0){
-    free(answer);
-    return false;
-  }
   
   node_show(input_node);
   string_entry("Svara med 1-5 för att välja ett av alternativen eller skriv \"avsluta\" för att avsluta och återvända till huvudmenyn.\n1. Redigera namn\n2. Redigera beskrivning\n3. Redigera pris\n4. Redigera antal\n5. Redigera hyllplats(er)", answer);
@@ -369,9 +347,9 @@ bool io_node_edit(tree *input_tree, node *input_node) {
     string_entry("Svara med 1-5 för att välja ett av alternativen eller skriv \"avsluta\" för att avsluta och återvända till huvudmenyn.", answer);
     
     if (string_compare(answer, "avsluta") == 0) {
-      string_entry("Är du säker på att du vill avsluta?\n(J/j) för ja, (N/n) för nej.", answer);
+      bool quit = string_yes_no_question("Är du säker på att du vill avsluta?");
       
-      if (string_compare(answer, "j") == 0) {
+      if (quit) {
         printf("Du har valt att avsluta.\n");
         free(answer);
         return false;
@@ -397,7 +375,6 @@ bool io_node_edit(tree *input_tree, node *input_node) {
       break;
       
     case 5:
-      //printf("To be implemented...\n");
       io_ware_edit_shelves(input_tree, node_get_ware(input_node));
       break;
       

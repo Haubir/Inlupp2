@@ -6,7 +6,7 @@
 //  Copyright © 2018 HauCorp. All rights reserved.
 //
 
-#include "main.h"
+#include "io.h"
 
 char *menu_string() {
   return "[L]ägg till en vara\n[T]a bort en vara\n[R]edigera en vara\nÅn[g]ra senaste ändringen\nLista [h]ela varukatalogen\n[P]acka en pall\n[A]vsluta\n\nVad vill du göra idag? ";
@@ -31,22 +31,26 @@ int main(int argc, const char * argv[]) {
     if ((string_length(input_string_tolower) > 1) && (string_compare(input_string_tolower, "preset") != 0)){printf("Din input matchade inte något av alternativen från menyn. Försök igen.\n\n");}
     else if (string_compare(input_string_tolower, "l") == 0) {
       printf("Du valde att lägga till en vara\n\n"); 
-      test_add_to_tree(main_tree);
+      io_add_to_tree(main_tree);
     }
     else if (string_compare(input_string_tolower, "t") == 0) {
       printf("Du valde att ta bort en vara\n\n");
-      test_remove_node(main_tree);
+      io_remove_node(main_tree);
     }
     else if (string_compare(input_string_tolower, "r") == 0) {
       printf("Du valde att redigera en vara\n\n");
-      test_edit_node(main_tree);
+      io_edit_node(main_tree);
     }
     else if (string_compare(input_string_tolower, "g") == 0) {printf("Du valde att ångra den senaste ändringen\n\n");}
     else if (string_compare(input_string_tolower, "h") == 0) {
       printf("Du valde att lista hela varukorgen\n\n");
-      tree_list_nodes(main_tree);
+      io_list_nodes(main_tree);
     }
-    else if (string_compare(input_string_tolower, "p") == 0) {printf("Du valde att packa en pall\n\n");}
+    else if (string_compare(input_string_tolower, "p") == 0) {
+      printf("Du valde att packa en pall\n\n");
+      tree *shopping_cart_tree = tree_new();
+      io_shopping_cart(main_tree, shopping_cart_tree);
+    }
     else if (string_compare(input_string_tolower, "a") == 0) {printf("Du valde att avsluta programmet\n\n"); exit(0);}
     else if (string_compare(input_string_tolower, "preset") == 0) {
       printf("Du valde att skapa ett träd med 7 förinställda noder.\n\n");

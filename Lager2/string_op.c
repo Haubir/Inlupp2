@@ -99,6 +99,21 @@ void string_entry(char *input_text, char *result) {
   free(buffer);
 }
 
+bool string_yes_no_question(char *input_text) {
+  bool answer = false;
+  char *input = string_new();
+  printf("%s\n", input_text);
+  while(!string_equals(input, "ja") && !string_equals(input, "nej")) {
+    string_entry("Vänligen svara 'ja' eller 'nej'.", input);
+  }
+  if (string_equals(input, "ja")) answer = true;
+  if (string_equals(input, "nej")) answer = false;
+  
+  free(input);
+  
+  return answer;
+}
+
 void strip_string(char *buffer) {
   for (int i = 0; buffer[i] != '\0'; i++) {
     if (buffer[i] == '\n') {

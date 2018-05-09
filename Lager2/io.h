@@ -34,12 +34,8 @@ void io_input_decrement(shelf *input_shelf, int *decrement);
 
 bool io_choose_shelves(int shelves_size, int *choice);
 
-void io_edit_node(tree *input_tree);
-
 /// Edits a node in the tree and rebalances the node if necessary
-///
-/// \returns: true if successful
-bool io_tree_node_edit(tree *input_tree);
+void io_edit_node(tree *input_tree);
 
 /// Edits a node
 bool io_node_edit(tree *input_tree, node *input_node);

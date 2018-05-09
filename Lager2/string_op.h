@@ -42,6 +42,9 @@ int string_length(char *string);
 /* Handles string inputs into the system. */
 void string_entry(char *input_text, char *result);
 
+/* Handles yes/no questions. */
+bool string_yes_no_question(char *input_text);
+
 /* Strips the input string of the \0 character. */
 void strip_string(char *buffer);
 

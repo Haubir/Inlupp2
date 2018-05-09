@@ -99,6 +99,23 @@ void ware_decrement_amount(ware *input_ware, int amount) {
   input_ware->amount -= amount;
 }
 
+/* Updates the amount of the ware by recounting the quantities of the shelves in the shelves_list */ 
+void ware_update_amount(ware *input_ware){
+  if (input_ware->shelves == NULL) return;
+  
+  list_node *iter = shelves_list_get_first(input_ware->shelves);
+  int count = 0;
+  
+  while (iter) {
+    shelf *iter_shelf = (shelf *) list_node_get_data(iter);
+    int iter_quantity = shelf_get_quantity(iter_shelf);
+    count += iter_quantity;
+    iter = list_node_get_next(iter);
+  }
+  
+  input_ware->amount = count;
+}
+
 /* Sets a new list of shelves for the ware */
 void ware_set_shelves(ware *input_ware, shelves_list *shelves) {
   input_ware->shelves = shelves;
@@ -169,6 +186,7 @@ void ware_increment_shelves(ware *input_ware, char *shelf_location, int incremen
   shelf_set_location(new_shelf, shelf_location);
   shelf_set_quantity(new_shelf, increment);
   shelves_list_prepend(input_ware->shelves, new_shelf);
+  ware_update_amount(input_ware);
 }
 
 /* Edit the key of the input_ware */
@@ -262,10 +280,4 @@ void ware_edit_new_amount(ware *input_ware){
   int_entry("Vänligen skriv in ett nytt antal för varan: ", &new_amount);
   
   ware_set_amount(input_ware, new_amount);
-}
-
-/* Interface for editing the shelves where the input_ware is located */
-void ware_edit_shelves(ware *input_ware) {
-  shelves_show(input_ware->shelves, "shelf");
-  
 }
