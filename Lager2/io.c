@@ -491,16 +491,14 @@ void io_shopping_cart(tree *main_tree, tree *shopping_cart_tree) {
     }
     node *existing_node = find_node_in_tree(node_get_key(chosen_node), shopping_cart_tree);
     if (existing_node != NULL) {
-      char *answer = string_new();
-      string_entry("Denna varan finns redan på din pall. Vill du öka antalet?", answer);
-      if (string_equals(answer, "ja")) {
-        free(answer);
+      bool answer = string_yes_no_question("Denna varan finns redan på din pall. Vill du öka antalet?");
+
+      if (answer) {
         int increment = 0;
         int_entry("Hur många fler av varan vill du lägga till?", &increment);
         ware *existing_ware = node_get_ware(existing_node);
         ware_increment_amount(existing_ware, increment);
       }
-      else if (string_equals(answer, "nej")) free(answer);
       
       continue;
     }
