@@ -46,7 +46,7 @@ tree *preset_tree() {
   }
   
   int prices[13] = {4, 17, 99, 3, 2, 47, 55, 67, 78, 89, 90, 22, 31};
-  char *shelf_list[13] = {"o", "j", "m", "g", "f", "h", "w", "q", "t", "k", "y", "p", "c"};
+  char *shelf_list[13] = {"o11", "j12", "m66", "g78", "f03", "h18", "w39", "q82", "t23", "k21", "y17", "p20", "c91"};
   char *shelf_locations[13];
   int shelf_quantities[13] = {14, 6, 92, 7, 1, 85, 37, 23, 11, 29, 4, 41, 74};
   
