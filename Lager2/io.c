@@ -57,6 +57,21 @@ tree *preset_tree() {
   return new_tree;
 }
 
+void io_list_nodes(tree *input_tree) {
+  tree_list_nodes(input_tree);
+  bool keep_going = string_yes_no_question("Svara ja om du vill se mer information om en vara, annars nej för att återgå till huvudmenyn:");
+  if (!keep_going) return;
+  
+  while (keep_going) {
+    int choice = 0;
+    while (!io_choose_ware("Vilken vara vill du titta närmre på?", tree_size(input_tree), &choice));
+    node *to_show = find_node_by_index(input_tree, choice);
+    node_show(to_show);
+    keep_going = string_yes_no_question("Vill du se mer information om en annan vara? Om inte, svara 'nej' för att återgå till huvudmenyn.");
+    if (keep_going) tree_list_nodes(input_tree);
+  }
+}
+
 // Only for development purposes. Tests the ability to create a new tree with a root.
 tree *test_add_root(char *ware_name) {
   tree *new_tree = tree_new();
@@ -490,7 +505,7 @@ void io_shopping_cart(tree *main_tree, tree *shopping_cart_tree) {
     printf("\nVaror i databasen:\n\n");
     tree_list_nodes(main_tree);
     int choice = 0;
-    while (!io_choose_ware(tree_size(main_tree), &choice));
+    while (!io_choose_ware("Välj vara att packa på pallen", tree_size(main_tree), &choice));
     
     node *chosen_node = find_node_by_index(main_tree, choice);
     if (chosen_node == NULL) {
@@ -528,6 +543,7 @@ void io_shopping_cart(tree *main_tree, tree *shopping_cart_tree) {
     
     tree_node_add(shopping_cart_tree, shopping_node);
     
+    // bool keep_going = string_yes_no_question("Vill du packa en till vara?");
     char *answer = string_new();
     string_entry("Vill du packa en till vara?", answer);
     if (string_equals(answer, "ja")) keep_going = true;
@@ -547,8 +563,8 @@ void io_list_shopping_cart(tree *shopping_cart_tree) {
   }
 }
 
-bool io_choose_ware(int tree_size, int *choice) {
-  int_entry("Välj vara att packa på pallen", choice);  
+bool io_choose_ware(char *input_text, int tree_size, int *choice) {
+  int_entry(input_text, choice);  
   bool valid_choice = false;
   valid_choice = (*choice >= 1) && (*choice <= tree_size);
   

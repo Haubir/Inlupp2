@@ -13,6 +13,8 @@
 
 tree *preset_tree(void);
 
+void io_list_nodes(tree *input_tree);
+
 tree *test_add_root(char *key);
 
 void io_add_to_tree(tree *input_tree);
@@ -61,7 +63,7 @@ void io_shopping_cart(tree *main_tree, tree *shopping_cart_tree);
 void io_list_shopping_cart(tree *shopping_cart_tree);
 
 /// Interface for picking one of the wares in the tree to put in a shopping cart
-bool io_choose_ware(int tree_size, int *choice);
+bool io_choose_ware(char *input_text, int tree_size, int *choice);
 
 /// Interface for choosing how many of a ware put in a shopping cart
 bool io_choose_ware_amount_to_shop(int max_amount, int *choice);
