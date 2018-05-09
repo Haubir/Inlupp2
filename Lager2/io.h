@@ -55,6 +55,8 @@ bool io_ware_edit_choose_shelves(int shelves_size, int *choice);
 /// Interface for selecting wares from the tree and putting them in a shopping cart
 void io_shopping_cart(tree *main_tree, tree *shopping_cart_tree);
 
+void io_list_enough_shelves(node *iter);
+
 /// Lists the contents of the shopping cart
 void io_list_shopping_cart(tree *shopping_cart_tree);
 

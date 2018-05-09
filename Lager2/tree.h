@@ -39,10 +39,10 @@ node **tree_get_root(tree *input_tree);
 void tree_set_root(tree *input_tree, node **new_root);
 
 /// Shows the nodes of the tree
-void tree_list_nodes(tree *input_tree);
+void tree_list_nodes(tree *input_tree, char *flag);
 
 /// Auxilliary function for tree_list_nodes, that traverses through the tree and prints information about all the nodes in the tree
-void tree_list_nodes_aux(node *iter, int *count_ptr);
+void tree_list_nodes_aux(node *iter, int *count_ptr, char *flag);
 
 /// Creates a new root 
 ///

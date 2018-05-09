@@ -412,3 +412,54 @@ void shelves_show(shelves_list *input_list, char *flag) {
     count++;
   }
 }
+
+shelf *shelves_list_find_max_shelf_quantity(shelves_list *input_list) {
+  list_node *iter = input_list->first;
+  int compare = -1;
+  shelf *max_shelf = NULL;
+  while (iter) {
+    shelf *iter_shelf = (shelf *) iter->data;
+    if (iter_shelf->quantity > compare) {
+      compare = iter_shelf->quantity;
+      max_shelf = iter_shelf;
+    }
+    
+    iter = iter->next;
+  }
+  
+  return max_shelf;
+}
+
+shelves_list *get_enough_shelves(int amount, shelves_list *input_list) {
+  shelves_list *to_return = shelves_new();
+  int to_return_quantity = 0;
+  // 1. to_return ska innehålla hyllorna från input_list i storleksordning sett till quantity för varje shelf
+  
+  shelves_list *tmp = shelves_new();
+  shelves_copy(tmp, input_list);
+  shelves_list *ordered_list = shelves_new();
+  
+  while (!shelves_list_is_empty(tmp)) {
+    shelf *max_shelf = shelves_list_find_max_shelf_quantity(tmp);
+    shelf *new_shelf = shelf_new();
+    shelf_copy(new_shelf, max_shelf);
+    shelves_list_append(ordered_list, new_shelf);
+    shelves_list_remove_by_location(tmp, max_shelf->location);
+  }
+  
+  // 2. Behåll endast så många hyllor tillsammans som når upp till amount. Börja titta på hyllan med störst antal och fortsätt neråt tills totala hyllantalen precis kommit över amount.
+  list_node *iter = ordered_list->first;
+  while (to_return_quantity < amount) {
+    shelf *iter_shelf = iter->data;
+    shelf *new_shelf = shelf_new();
+    shelf_copy(new_shelf, iter_shelf);
+    to_return_quantity += iter_shelf->quantity;
+    shelves_list_append(to_return, new_shelf);
+    iter = iter->next;
+  }
+  
+  shelves_free(tmp);
+  shelves_free(ordered_list);
+  
+  return to_return;
+}

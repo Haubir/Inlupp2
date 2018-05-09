@@ -71,7 +71,7 @@ void io_list_nodes(tree *input_tree) {
     printf("Databasen är tom!\n\n");
     return;
   }
-  tree_list_nodes(input_tree);
+  tree_list_nodes(input_tree, "database");
   bool keep_going = string_yes_no_question("Svara ja om du vill se mer information om en vara, annars nej för att återgå till huvudmenyn:");
   if (!keep_going) return;
   
@@ -81,7 +81,7 @@ void io_list_nodes(tree *input_tree) {
     node *to_show = find_node_by_index(input_tree, choice);
     node_show(to_show);
     keep_going = string_yes_no_question("Vill du se mer information om en annan vara? Om inte, svara 'nej' för att återgå till huvudmenyn.");
-    if (keep_going) tree_list_nodes(input_tree);
+    if (keep_going) tree_list_nodes(input_tree, "database");
   }
 }
 
@@ -210,7 +210,7 @@ void io_remove_node(tree *input_tree) {
     printf("Databasen är tom, det finns inget att ta bort!\n");
     return;
   }
-  tree_list_nodes(input_tree);
+  tree_list_nodes(input_tree, "database");
   int choice = 0;
   while (!io_choose_ware("Välj en vara att ta bort.", tree_size(input_tree), &choice));
   
@@ -302,7 +302,7 @@ void io_edit_node(tree *input_tree) {
     return;
   }
   
-  tree_list_nodes(input_tree);
+  tree_list_nodes(input_tree, "database");
   int choice = 0;
   while (!io_choose_ware("Vilken vara önskar du att redigera?", tree_size(input_tree), &choice));
   node *to_edit = find_node_by_index(input_tree, choice);
@@ -480,7 +480,7 @@ void io_shopping_cart(tree *main_tree, tree *shopping_cart_tree) {
   while (keep_going) {
     io_list_shopping_cart(shopping_cart_tree);
     printf("\nVaror i databasen:\n\n");
-    tree_list_nodes(main_tree);
+    tree_list_nodes(main_tree, "shopping");
     int choice = 0;
     while (!io_choose_ware("Välj vara att packa på pallen", tree_size(main_tree), &choice));
     
@@ -524,19 +524,45 @@ void io_shopping_cart(tree *main_tree, tree *shopping_cart_tree) {
     char *answer = string_new();
     string_entry("Vill du packa en till vara?", answer);
     if (string_equals(answer, "ja")) keep_going = true;
-    else if (string_equals(answer, "nej")) keep_going = false;
+    else if (string_equals(answer, "nej")) {
+      keep_going = false;
+      io_list_shopping_cart(shopping_cart_tree);
+      printf("Lagerplatser för att packa pallen: \n\n");
+      
+      node **tree_root = tree_get_root(shopping_cart_tree);
+      node *root_node = *tree_root;
+      
+      io_list_enough_shelves(root_node);
+      printf("\n");
+    } 
     free(answer);
   }
+}
+
+void io_list_enough_shelves(node *iter) {
+  if (get_left_node(iter)) io_list_enough_shelves(get_left_node(iter));
   
+  ware *shopping_ware = node_get_ware(iter);
+  shelves_list *shopping_ware_shelves = ware_get_shelves(shopping_ware);
+  int enough_amount = ware_get_amount(shopping_ware);
+  shelves_list *enough_shelves = get_enough_shelves(enough_amount, shopping_ware_shelves);
+  list_node *iter_list_node = shelves_list_get_first(enough_shelves);
+  while (iter_list_node) {
+    shelf *iter_shelf = (shelf *) list_node_get_data(iter_list_node);
+    printf("- %s (%d %s)\n", shelf_get_location(iter_shelf), shelf_get_quantity(iter_shelf), ware_get_key(shopping_ware));
+    iter_list_node = list_node_get_next(iter_list_node);
+  }
+  
+  if (get_right_node(iter)) io_list_enough_shelves(get_right_node(iter));
 }
 
 void io_list_shopping_cart(tree *shopping_cart_tree) {
   if (tree_size(shopping_cart_tree) == 0) printf("Din pall är tom.\n");
   else {
     printf("\nDin pall:\n");
-    tree_list_nodes(shopping_cart_tree);
+    tree_list_nodes(shopping_cart_tree, "shopping");
     int total_price = io_total_price_of_cart(shopping_cart_tree);
-    printf("Totalt pris för pallen: %d kr", total_price);
+    printf("Totalt pris för pallen: %d kr\n", total_price);
   }
 }
 

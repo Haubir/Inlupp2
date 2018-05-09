@@ -55,7 +55,7 @@ void tree_set_root(tree *input_tree, node **new_root) {
 }
 
 /* Shows the nodes of the tree */
-void tree_list_nodes(tree *input_tree) {
+void tree_list_nodes(tree *input_tree, char *flag) {
   node **root_pointer = tree_get_root(input_tree);
   node *root_node = *root_pointer;
   if (!root_node) {
@@ -63,24 +63,19 @@ void tree_list_nodes(tree *input_tree) {
     return;
   }
   int count = 1;
-  if (!node_has_children(root_node)) {
-    printf("%d. %s\n\n", count, root_node->key);
-    //node_show(root_node);
-    return;
-  }
   
-  tree_list_nodes_aux(root_node, &count);
+  tree_list_nodes_aux(root_node, &count, flag);
  
   printf("\n");
 }
 
 /* Auxilliary function for tree_list_nodes, that traverses through the tree and prints information about all the nodes in the tree */
-void tree_list_nodes_aux(node *iter, int *count_ptr) {
-  if (iter->left) tree_list_nodes_aux(iter->left, count_ptr);
-  printf("%d. %s\n", *count_ptr, iter->key);
-  //node_show(iter);
+void tree_list_nodes_aux(node *iter, int *count_ptr, char *flag) {
+  if (iter->left) tree_list_nodes_aux(iter->left, count_ptr, flag);
+  if (string_equals(flag, "database")) printf("%d. %s\n", *count_ptr, iter->key);
+  if (string_equals(flag, "shopping")) printf("%d. %s (%d st.)\n", *count_ptr, iter->key, ware_get_amount(node_get_ware(iter)));
   (*count_ptr)++;
-  if (iter->right) tree_list_nodes_aux(iter->right, count_ptr);
+  if (iter->right) tree_list_nodes_aux(iter->right, count_ptr, flag);
 }
 
 /* Creates a new root for a tree */

@@ -167,4 +167,8 @@ bool shelves_list_remove_by_index(shelves_list *input_list, int index);
 /// Shows the contents of the shelves_list.
 void shelves_show(shelves_list *input_list, char *flag);
 
+shelf *shelves_list_find_max_shelf_quantity(shelves_list *input_list);
+
+shelves_list *get_enough_shelves(int amount, shelves_list *input_list);
+
 #endif /* shelves_list_h */
