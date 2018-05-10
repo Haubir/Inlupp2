@@ -311,7 +311,7 @@ bool tree_node_remove(tree *input_tree, char *key) {
 node *find_node_in_tree(char *find_key, tree *input_tree/*, node *dest_node*/) {
   
   if (*(input_tree->root) == NULL) return NULL;
-  
+  if (string_equals(find_key, "") || find_key == NULL) return NULL;
   node **root_node = input_tree->root;
   node *test = find_node_in_tree_aux(find_key, *root_node);
   

@@ -11,17 +11,17 @@
 // Only for development purposes. Creates a new tree with 14 nodes. 
 tree *preset_tree() {
   char *root_name = string_new();
-  root_name = "e";
+  string_copy(root_name, "e");
   tree *new_tree = test_add_root(root_name);
   node **tree_root = tree_get_root(new_tree);
   node *root_node = *tree_root;
   
   char *root_description = string_new();
-  root_description = "The letter e.";
+  string_copy(root_description,"The letter e.");
   int root_price = 23;
   
   char *root_shelf = string_new();
-  root_shelf = "A01";
+  string_copy(root_shelf, "A01");
   int root_shelf_quantity = 9;
   
   ware_set_description(node_get_ware(root_node), root_description);
@@ -160,7 +160,6 @@ void io_increment_shelves(node *input_node, char *shelf_location, char *flag) {
     shelf *to_increment = (shelf *) list_node_get_data(node_to_increment);
     shelf_increment_quantity(to_increment, increment);
   }
-  ware_increment_amount(input_ware, increment);
 }
 
 // Checks if the shelf_location follows the correct naming format for shelf locations, and also if the given shelf location is already occupied.
@@ -214,8 +213,6 @@ void io_remove_node(tree *input_tree) {
   int choice = 0;
   while (!io_choose_ware("Välj en vara att ta bort.", tree_size(input_tree), &choice));
   
-  
-  
   node *to_delete = find_node_by_index(input_tree, choice);
   bool keep_going = true;
   while (keep_going) {
@@ -225,7 +222,6 @@ void io_remove_node(tree *input_tree) {
     if (!find_node_in_tree(node_get_key(to_delete), input_tree)) break;
     keep_going = string_yes_no_question("Vill du ta bort varan från en annan hylla också?");
   }
-  
 }
 
 void io_remove_shelves(tree *input_tree, node *input_node) {
@@ -237,15 +233,19 @@ void io_remove_shelves(tree *input_tree, node *input_node) {
   if (shelves_size > 1) {
     int choice = 0;
     while (!io_choose_shelves(shelves_size, &choice));
-    list_node *to_remove_from = find_list_node_by_index(input_shelves, choice-1);
-    shelf *to_decrement = (shelf *) list_node_get_data(to_remove_from);
-    
-    io_input_decrement(to_decrement, &decrement);
-    
-    shelf_decrement_quantity(to_decrement, decrement);
-    ware_decrement_amount(input_ware, decrement);
-    if (shelf_is_empty(to_decrement)) {
-      shelves_list_remove_by_index(input_shelves, choice-1);
+    if (choice == 0) {
+      tree_node_remove(input_tree, node_get_key(input_node));
+    }
+    else {
+      list_node *to_remove_from = find_list_node_by_index(input_shelves, choice-1);
+      shelf *to_decrement = (shelf *) list_node_get_data(to_remove_from);
+      
+      io_input_decrement(to_decrement, &decrement);
+      
+      shelf_decrement_quantity(to_decrement, decrement);
+      if (shelf_is_empty(to_decrement)) {
+        shelves_list_remove_by_index(input_shelves, choice-1);
+      }
     }
   }
   else if (shelves_size == 1) {
@@ -255,7 +255,7 @@ void io_remove_shelves(tree *input_tree, node *input_node) {
     io_input_decrement(to_decrement, &decrement);
     
     shelf_decrement_quantity(to_decrement, decrement);
-    ware_decrement_amount(input_ware, decrement);
+  
     if (shelf_is_empty(to_decrement)) {
       if (tree_node_remove(input_tree, node_get_key(input_node))) {
         printf("Varan är nu borttagen från systemet!\n");
@@ -279,12 +279,18 @@ void io_input_decrement(shelf *input_shelf, int *decrement) {
 }
 
 bool io_choose_shelves(int shelves_size, int *choice) {
-  int_entry("Vilken hyllplats skall tas bort ifrån?", choice);  
+  int_entry("Vilken hyllplats skall tas bort ifrån? Om du vill ta bort varan från alla hyllor och därmed ta bort den från systemet, svara '0'.", choice);  
   bool valid_choice = false;
-  valid_choice = (*choice >= 1) && (*choice <= shelves_size);
+  valid_choice = *choice <= shelves_size;
+  
+  if (*choice == 0) { 
+    bool answer = string_yes_no_question("Är du säker på att du helt och hållet vill ta bort varan från systemet och alla dess hyllor?");
+    if (!answer) return false;
+    printf("Du valde att helt och hållet ta bort varan från systemet\n\n.");
+  }
   
   if (!valid_choice) {
-    printf("Vänligen skriv en siffra mellan 1-%d för att välja en av hyllplatserna.\n", shelves_size);
+    printf("Vänligen skriv en siffra mellan 1-%d för att välja en av hyllplatserna eller 0 för att välja alla.\n", shelves_size);
     return false;
   } 
   
@@ -322,7 +328,8 @@ void io_edit_node(tree *input_tree) {
     
     if (io_node_edit(input_tree, copy_of_edited)) { 
       tree_node_remove(input_tree, node_get_key(to_edit));
-      tree_node_add(input_tree, copy_of_edited);
+      if (ware_get_amount(node_get_ware(copy_of_edited)) == 0) node_free(copy_of_edited);
+      else tree_node_add(input_tree, copy_of_edited);
     }
     else node_free(copy_of_edited);
   }
@@ -337,12 +344,11 @@ bool io_node_edit(tree *input_tree, node *input_node) {
   char *answer = string_new();
   
   node_show(input_node);
-  string_entry("Svara med 1-5 för att välja ett av alternativen eller skriv \"avsluta\" för att avsluta och återvända till huvudmenyn.\n1. Redigera namn\n2. Redigera beskrivning\n3. Redigera pris\n4. Redigera antal\n5. Redigera hyllplats(er)", answer);
+  string_entry("Svara med 1-5 för att välja ett av alternativen eller skriv \"avsluta\" för att avsluta och återvända till huvudmenyn.\n1. Redigera namn\n2. Redigera beskrivning\n3. Redigera pris\n4. Redigera hyllplats(er)", answer);
   while ((string_compare(answer, "1") != 0) &&
          (string_compare(answer, "2") != 0) &&
          (string_compare(answer, "3") != 0) &&
          (string_compare(answer, "4") != 0) &&
-         (string_compare(answer, "5") != 0) &&
          (string_compare(answer, "avsluta") != 0)) {
     string_entry("Svara med 1-5 för att välja ett av alternativen eller skriv \"avsluta\" för att avsluta och återvända till huvudmenyn.", answer);
     
@@ -371,10 +377,6 @@ bool io_node_edit(tree *input_tree, node *input_node) {
       break;
       
     case 4:
-      ware_edit_amount(node_get_ware(input_node));
-      break;
-      
-    case 5:
       io_ware_edit_shelves(input_tree, node_get_ware(input_node));
       break;
       
@@ -400,6 +402,7 @@ void io_ware_edit_shelves(tree *input_tree, ware *input_ware) {
   shelf *shelf_to_edit = (shelf *) list_node_get_data(list_node_to_edit);
   io_edit_shelf(input_tree, shelf_to_edit);
   ware_update_amount(input_ware);
+  if (shelf_get_quantity(shelf_to_edit) == 0) shelves_list_remove_by_location(input_list, shelf_get_location(shelf_to_edit));
 }
 
 void io_edit_shelf(tree *input_tree, shelf *input_shelf) {

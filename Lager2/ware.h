@@ -44,6 +44,9 @@ void ware_increment_amount(ware *input_ware, int amount);
 /// Decrements the amount of the ware
 void ware_decrement_amount(ware *input_ware, int amount);
 
+/// Updates the amount of the ware by recounting the quantities of the shelves in the shelves_list 
+void ware_update_amount(ware *input_ware);
+
 /* Sets a new list of shelves for the ware */
 void ware_set_shelves(ware *input_ware, shelves_list *shelves);
 
@@ -90,20 +93,5 @@ void ware_edit_description(ware *input_ware);
 
 /// Edit the price of the input_ware
 void ware_edit_price(ware *input_ware);
-
-/// Edit the amount of the input_ware
-void ware_edit_amount(ware *input_ware);
-
-/// Interface for incrementing the amount of the input_ware
-void ware_edit_increment_amount(ware *input_ware);
-
-/// Interface for decrementing the amount of the input_ware
-void ware_edit_decrement_amount(ware *input_ware);
-
-/// Interface for setting a new amount for the input_ware
-void ware_edit_new_amount(ware *input_ware);
-
-/* Interface for editing the shelves where the input_ware is located */
-void ware_edit_shelves(ware *input_ware);
 
 #endif /* ware_h */
