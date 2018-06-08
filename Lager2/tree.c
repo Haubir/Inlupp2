@@ -25,9 +25,10 @@ struct node {
 /* Creates a new tree */
 tree *tree_new() {
   tree *new_tree = calloc(1, sizeof(tree));
-  node **new_root = root_new(); // TODO!!! Ska inte allokera minne för en rot förrän det finns en nod att sätta in i roten. Allokeringen ska göras i io.c eller tree_node_add() istället för här hursomhelst.
-  
-  new_tree->root = new_root;
+  //node **new_root = root_new(); // TODO!!! Ska inte allokera minne för en rot förrän det finns en nod att sätta in i roten. Allokeringen ska göras i io.c eller tree_node_add() istället för här hursomhelst.
+  //new_tree->root = new_root;
+
+  new_tree->root = NULL;
   new_tree->size = 0;
   new_tree->depth = 0;
   
