@@ -175,8 +175,31 @@ void node_copy(node *destination, node *source) {
   //memcpy(destination, source, sizeof(node));
 }
 
+/*  This function traverses tree in post order to 
+    to delete each and every node of the tree */
+void tree_destroy_aux(node *to_delete) 
+{
+    if (to_delete == NULL) return;
+ 
+    /* first delete both subtrees */
+    tree_destroy_aux(node->left);
+    tree_destroy_aux(node->right);
+   
+    /* then delete the node */
+    printf("\n Deleting node: %s", to_delete->key);
+    node_free(to_delete);
+} 
+
 void tree_destroy(tree *input_tree) {
-  // TODO!! Ska ta bort varje nod i trädet, sedan roten och till sist trädet. 
+  node **tree_root = input_tree->root;
+  node *root_node = *tree_root;
+  
+  tree_destroy_aux(root_node);
+  
+  tree_root_free(tree_root); // Testa detta, kanske inte funkar!
+  // Om ovan ej funkade:
+  free(input_tree->root);
+  free(tree);
 }
 
 /* Free:s up the memory that was allocated for the root */
