@@ -25,7 +25,7 @@ struct node {
 /* Creates a new tree */
 tree *tree_new() {
   tree *new_tree = calloc(1, sizeof(tree));
-  node **new_root = root_new();
+  node **new_root = root_new(); // TODO!!! Ska inte allokera minne för en rot förrän det finns en nod att sätta in i roten. Allokeringen ska göras i io.c eller tree_node_add() istället för här hursomhelst.
   
   new_tree->root = new_root;
   new_tree->size = 0;
@@ -81,7 +81,7 @@ void tree_list_nodes_aux(node *iter, int *count_ptr, char *flag) {
 /* Creates a new root for a tree */
 node **root_new() {
   node **new_root = calloc(1, sizeof(node *));
-  *new_root = NULL;
+  
   return new_root;
 }
 
@@ -173,6 +173,10 @@ void node_copy(node *destination, node *source) {
   set_right_node(destination, get_right_node(source));
   
   //memcpy(destination, source, sizeof(node));
+}
+
+void tree_destroy(tree *input_tree) {
+  // TODO!! Ska ta bort varje nod i trädet, sedan roten och till sist trädet. 
 }
 
 /* Free:s up the memory that was allocated for the root */
@@ -390,9 +394,11 @@ bool find_shelf_in_tree_aux(char *key, node *iter) {
   ware *iter_ware = iter->ware;
   shelves_list *iter_shelves = ware_get_shelves(iter_ware);
   
-  if (iter->left) return find_shelf_in_tree_aux(key, iter->left);
+  if (iter->left && find_shelf_in_tree_aux(key, iter->left)) return true;
+  
   if (shelf_already_exists(iter_shelves, key)) return true;
-  if (iter->right) return find_shelf_in_tree_aux(key, iter->right);
+  
+  if (iter->right && find_shelf_in_tree_aux(key, iter->right)) return true;
   
   return false;
 }

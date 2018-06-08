@@ -51,7 +51,11 @@ int main(int argc, const char * argv[]) {
       tree *shopping_cart_tree = tree_new();
       io_shopping_cart(main_tree, shopping_cart_tree);
     }
-    else if (string_compare(input_string_tolower, "a") == 0) {printf("Du valde att avsluta programmet\n\n"); exit(0);}
+    else if (string_compare(input_string_tolower, "a") == 0) {
+      printf("Du valde att avsluta programmet\n\n"); 
+      // tree_destroy(main_tree);
+      exit(0);
+    }
     else if (string_compare(input_string_tolower, "preset") == 0) {
       printf("Du valde att skapa ett träd med 7 förinställda noder.\n\n");
       tree *new_tree = preset_tree();
