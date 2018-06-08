@@ -129,6 +129,12 @@ bool tree_node_add(tree *tree_root, node *to_insert);
 /// \returns: true if insertion was completed successfully
 bool tree_node_insert(node *start, node *to_insert);
 
+/// Deletes a whole tree and free:s up the memory.
+void tree_destroy(tree *input_tree); 
+
+/// Helper function for tree_destroy(). Traverses the tree in post-order and deletes every node.
+void tree_destroy_aux(node *to_delete);
+
 /// Removes the root of the input_tree
 ///
 /// \returns: true
