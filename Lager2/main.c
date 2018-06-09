@@ -53,7 +53,7 @@ int main(int argc, const char * argv[]) {
     }
     else if (string_compare(input_string_tolower, "a") == 0) {
       printf("Du valde att avsluta programmet\n\n"); 
-      // tree_destroy(main_tree);
+      tree_destroy(main_tree);
       exit(0);
     }
     else if (string_compare(input_string_tolower, "preset") == 0) {

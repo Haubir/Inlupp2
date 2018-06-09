@@ -183,11 +183,11 @@ void tree_destroy_aux(node *to_delete)
     if (to_delete == NULL) return;
  
     /* first delete both subtrees */
-    tree_destroy_aux(node->left);
-    tree_destroy_aux(node->right);
+    tree_destroy_aux(to_delete->left);
+    tree_destroy_aux(to_delete->right);
    
     /* then delete the node */
-    printf("\n Deleting node: %s", to_delete->key);
+    printf("\nDeleting node: %s", to_delete->key);
     node_free(to_delete);
 } 
 
@@ -197,10 +197,9 @@ void tree_destroy(tree *input_tree) {
   
   tree_destroy_aux(root_node);
   
-  tree_root_free(tree_root); // Testa detta, kanske inte funkar!
-  // Om ovan ej funkade:
+  free(*(input_tree->root));
   free(input_tree->root);
-  free(tree);
+  free(input_tree);
 }
 
 /* Free:s up the memory that was allocated for the root */
@@ -238,7 +237,7 @@ bool node_free(node *to_delete) {
 
 /* Calls on tree_node_insert to insert a node to the search tree, and updates the tree:s size and depth attributes if insertion was successful. */
 bool tree_node_add(tree *input_tree, node *to_insert) {
-  if (*(input_tree->root)) {
+  if (input_tree->root) {
     if (tree_node_insert(*(input_tree->root), to_insert)) {
       input_tree->size++;
       input_tree->depth++;
@@ -249,6 +248,8 @@ bool tree_node_add(tree *input_tree, node *to_insert) {
     }
   }
   else {
+    node **new_root = root_new();
+    input_tree->root = new_root;
     *(input_tree->root) = to_insert;
     
     input_tree->size++;
@@ -289,8 +290,8 @@ bool tree_node_insert(node *start, node *to_insert) {
 /* Removes the root of the input_tree */
 bool tree_remove_root(tree *input_tree) {
   tree_root_free(input_tree->root);
-  
-  *(input_tree->root) = NULL;
+  free(input_tree->root);
+  input_tree->root = NULL;
   input_tree->size--;
   input_tree->depth--;
   
@@ -338,7 +339,7 @@ bool tree_node_remove(tree *input_tree, char *key) {
 /* Searches through the tree to find a node that matches the input key. If a node is found, dest_node will point to it when the function is done. */
 node *find_node_in_tree(char *find_key, tree *input_tree/*, node *dest_node*/) {
   
-  if (*(input_tree->root) == NULL) return NULL;
+  if (input_tree->root == NULL) return NULL;
   if (string_equals(find_key, "") || find_key == NULL) return NULL;
   node **root_node = input_tree->root;
   node *test = find_node_in_tree_aux(find_key, *root_node);
@@ -399,10 +400,11 @@ void find_node_by_index_aux(node *iter, int index, int *count_ptr, node **dest_n
 /* Searches through the tree to find a node that matches the input key. If a node is found, dest_node will point to it when the function is done. */
 bool find_shelf_in_tree(char *key, tree *input_tree/*, node *dest_node*/) {
   node **root_pointer = tree_get_root(input_tree);
-  node *root_node = *root_pointer;
-  if (!root_node) {
+  if (!root_pointer) {
     return false;
   }
+  node *root_node = *root_pointer;
+  
   
   if (!node_has_children(root_node)) {
     ware *root_ware = root_node->ware;
