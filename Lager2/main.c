@@ -16,6 +16,7 @@ char *menu_string() {
 int main(int argc, const char * argv[]) {
   
   tree *main_tree = tree_new();
+  tree *shopping_cart_tree = NULL;
     
   while (1) {
     char *input_string = calloc(1024, sizeof(char));
@@ -48,12 +49,14 @@ int main(int argc, const char * argv[]) {
     }
     else if (string_compare(input_string_tolower, "p") == 0) {
       printf("Du valde att packa en pall\n\n");
-      tree *shopping_cart_tree = tree_new();
+      if (shopping_cart_tree == NULL) shopping_cart_tree = tree_new();
       io_shopping_cart(main_tree, shopping_cart_tree);
     }
     else if (string_compare(input_string_tolower, "a") == 0) {
       printf("Du valde att avsluta programmet\n\n"); 
-      tree_destroy(main_tree);
+      if (main_tree && tree_size(main_tree) > 0) tree_destroy(main_tree);
+      if (shopping_cart_tree && tree_size(shopping_cart_tree) > 0) tree_destroy(shopping_cart_tree);
+      free(input_string_tolower);
       exit(0);
     }
     else if (string_compare(input_string_tolower, "preset") == 0) {
@@ -63,6 +66,7 @@ int main(int argc, const char * argv[]) {
       free(new_tree);
     }
     else {printf("Din input matchade inte något av alternativen från menyn. Försök igen.\n\n");}
+    free(input_string_tolower);
   }
   
   return 0;

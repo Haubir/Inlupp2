@@ -25,8 +25,6 @@ struct node {
 /* Creates a new tree */
 tree *tree_new() {
   tree *new_tree = calloc(1, sizeof(tree));
-  //node **new_root = root_new(); // TODO!!! Ska inte allokera minne för en rot förrän det finns en nod att sätta in i roten. Allokeringen ska göras i io.c eller tree_node_add() istället för här hursomhelst.
-  //new_tree->root = new_root;
 
   new_tree->root = NULL;
   new_tree->size = 0;
@@ -163,17 +161,14 @@ void tree_copy(tree *destination, tree *source) {
 
 /* Copies the source node into the destination node */
 void node_copy(node *destination, node *source) {
-  ware *dest_ware = ware_new();
-  ware_copy(dest_ware, node_get_ware(source));
-  node_set_ware(destination, dest_ware);
+  ware_copy(node_get_ware(destination), node_get_ware(source));
+  ware *dest_ware = node_get_ware(destination);
   char *ware_key = ware_get_key(dest_ware);
   node_set_key(destination, ware_key);
   
   set_left_node(destination, get_left_node(source));
   set_parent_node(destination, get_parent_node(source));
   set_right_node(destination, get_right_node(source));
-  
-  //memcpy(destination, source, sizeof(node));
 }
 
 /*  This function traverses tree in post order to 
@@ -187,7 +182,7 @@ void tree_destroy_aux(node *to_delete)
     tree_destroy_aux(to_delete->right);
    
     /* then delete the node */
-    printf("\nDeleting node: %s", to_delete->key);
+    printf("Deleting node: %s\n", to_delete->key);
     node_free(to_delete);
 } 
 
@@ -197,7 +192,7 @@ void tree_destroy(tree *input_tree) {
   
   tree_destroy_aux(root_node);
   
-  free(*(input_tree->root));
+  //free(*(input_tree->root));
   free(input_tree->root);
   free(input_tree);
 }
@@ -381,10 +376,10 @@ node *find_node_by_index(tree *input_tree, int index) {
   }
   
   int count = 1;
-  node *root_node = *(input_tree->root);
-  node *to_return = calloc(1, sizeof(node *));
-  find_node_by_index_aux(root_node, index, &count, &to_return);
-  
+  node *to_return = NULL;
+  //node *to_return = calloc(1, sizeof(node *));
+  node *iter = *(input_tree->root);
+  find_node_by_index_aux(iter, index, &count, &to_return);
   
   return to_return;
 }

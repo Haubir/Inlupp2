@@ -216,12 +216,18 @@ void io_remove_node(tree *input_tree) {
   node *to_delete = find_node_by_index(input_tree, choice);
   bool keep_going = true;
   while (keep_going) {
-    // TODO: Fixa så att man också kan ta bort alla styck av en vara direkt från systemet istället för att behöva ta bort hylla för hylla.
     node_show(to_delete);
+    char *node_key = string_new();
+    string_copy(node_key, node_get_key(to_delete));
     io_remove_shelves(input_tree, to_delete);
-    if (!find_node_in_tree(node_get_key(to_delete), input_tree)) break;
+    if (!find_node_in_tree(node_key, input_tree)) {
+      free(node_key);
+      break;
+    }
+    free(node_key);
     keep_going = string_yes_no_question("Vill du ta bort varan från en annan hylla också?");
   }
+  
 }
 
 void io_remove_shelves(tree *input_tree, node *input_node) {
@@ -313,7 +319,6 @@ void io_edit_node(tree *input_tree) {
   while (!io_choose_ware("Vilken vara önskar du att redigera?", tree_size(input_tree), &choice));
   node *to_edit = find_node_by_index(input_tree, choice);
   
-  
   if (!to_edit) {
     printf("The node to edit was not found in the tree...\n");
     return; // The node to edit was not found
@@ -331,8 +336,12 @@ void io_edit_node(tree *input_tree) {
       if (ware_get_amount(node_get_ware(copy_of_edited)) == 0) node_free(copy_of_edited);
       else tree_node_add(input_tree, copy_of_edited);
     }
-    else node_free(copy_of_edited);
+    else {
+      node_free(copy_of_edited);
+      free(to_edit); 
+    }
   }
+  
 }
 
 // TODO!!!
@@ -502,7 +511,8 @@ void io_shopping_cart(tree *main_tree, tree *shopping_cart_tree) {
         ware *existing_ware = node_get_ware(existing_node);
         ware_increment_amount(existing_ware, increment);
       }
-      
+
+      keep_going = string_yes_no_question("Vill du fortsätta packa pallen?");
       continue;
     }
     printf("-----------------------------------\n");
@@ -521,7 +531,6 @@ void io_shopping_cart(tree *main_tree, tree *shopping_cart_tree) {
     
     tree_node_add(shopping_cart_tree, shopping_node);
     
-    // bool keep_going = string_yes_no_question("Vill du packa en till vara?");
     char *answer = string_new();
     string_entry("Vill du packa en till vara?", answer);
     if (string_equals(answer, "ja")) keep_going = true;
@@ -555,6 +564,8 @@ void io_list_enough_shelves(node *iter) {
   }
   
   if (get_right_node(iter)) io_list_enough_shelves(get_right_node(iter));
+
+  shelves_free(enough_shelves);
 }
 
 void io_list_shopping_cart(tree *shopping_cart_tree) {

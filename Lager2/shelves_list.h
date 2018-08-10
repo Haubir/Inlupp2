@@ -66,7 +66,7 @@ bool shelves_list_is_empty(shelves_list *input_list);
 list_node *list_node_new(void);
 
 /// Deletes the input_list_node and free:s the memory that it had allocated
-bool list_node_free(list_node *to_delete, char *flag);
+bool list_node_free(list_node *to_delete, int flag);
 
 /// Copies the source_list into the destination_list
 void list_node_copy(list_node *destination, list_node *source);

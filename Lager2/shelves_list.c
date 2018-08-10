@@ -100,8 +100,8 @@ list_node *list_node_new() {
 }
 
 /* Deletes the input_list_node and free:s the memory that it had allocated */
-bool list_node_free(list_node *to_delete, char *flag) {
-  if (string_equals(flag, "shelf")) {
+bool list_node_free(list_node *to_delete, int flag) {
+  if (flag == 1) {
     shelf *shelf_to_delete = (shelf *) to_delete->data;
     shelf_free(shelf_to_delete);
   }
@@ -254,10 +254,10 @@ void shelves_list_top(shelves_list *input_list) {
     input_list->first = new_first;
   }
   
-  char *flag = string_new();
-  flag = "shelf";
+  int flag = 1; // flag == 1 for shelf
+  
   list_node_free(to_delete, flag);
-  // free(flag); TODO kan inte free:as av nån skum anledning. Titta på detta senare
+  
   input_list->size--;
 }
 
@@ -277,8 +277,9 @@ void shelves_list_tail(shelves_list *input_list) {
     input_list->last = new_last;
     new_last->next = NULL;
   }
-  char *flag = string_new();
-  flag = "shelf";
+
+  int flag = 1; // flag == 1 for shelf
+  
   list_node_free(to_delete, flag);
   
   input_list->size--;
@@ -326,8 +327,8 @@ bool shelves_list_remove_by_location(shelves_list *input_list, char *key) {
         iter->next = iter_next->next;
         if (iter->next == NULL) input_list->last = iter;
         
-        char *flag = string_new();
-        flag = "shelf";
+        int flag = 1; // flag == 1 for shelf 
+        
         list_node_free(iter_next, flag);
         
         input_list->size--;
@@ -381,8 +382,8 @@ bool shelves_list_remove_by_index(shelves_list *input_list, int index) {
         iter->next = iter_next->next;
         if (iter->next == NULL) input_list->last = iter;
         
-        char *flag = string_new();
-        flag = "shelf";
+        int flag = 1; // flag == 1 for shelf 
+        
         list_node_free(iter_next, flag);
         
         input_list->size--;
